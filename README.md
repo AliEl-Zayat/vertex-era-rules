@@ -150,6 +150,8 @@ export default [...vertexEraRules.configs.base];
 - Import sorting and management
 - Prettier integration
 - React configuration
+- **TypeScript naming conventions** (Type prefix: `T`, Interface prefix: `I`)
+- **Redux typed hooks enforcement** (enforces `useAppSelector` and `useAppDispatch`)
 
 **Note:** The base config does NOT include type-aware rules to avoid requiring `parserOptions.project`. See the Type-Aware Configuration section below if you need those rules.
 
@@ -249,6 +251,60 @@ export default [
 	},
 ];
 ```
+
+## 📋 Built-in Rules
+
+### TypeScript Naming Conventions
+
+The base config enforces TypeScript naming conventions:
+
+**Type Aliases:** Must start with `T` prefix
+```typescript
+// ✅ Correct
+type TUser = { name: string };
+type TApiResponse = { data: any };
+
+// ❌ Incorrect
+type User = { name: string };  // Missing T prefix
+```
+
+**Interfaces:** Must start with `I` prefix
+```typescript
+// ✅ Correct
+interface IUser { name: string }
+interface IApiResponse { data: any }
+
+// ❌ Incorrect
+interface User { name: string }  // Missing I prefix
+```
+
+### Redux Typed Hooks
+
+The base config enforces using typed Redux hooks for better type safety:
+
+**Enforces `useAppSelector` instead of `useSelector`:**
+```typescript
+// ✅ Correct
+import { useAppSelector } from '@/store/hooks';
+const user = useAppSelector(state => state.user);
+
+// ❌ Incorrect
+import { useSelector } from 'react-redux';  // Error: Use useAppSelector
+const user = useSelector(state => state.user);
+```
+
+**Enforces `useAppDispatch` instead of `useDispatch`:**
+```typescript
+// ✅ Correct
+import { useAppDispatch } from '@/store/hooks';
+const dispatch = useAppDispatch();
+
+// ❌ Incorrect
+import { useDispatch } from 'react-redux';  // Error: Use useAppDispatch
+const dispatch = useDispatch();
+```
+
+**Why:** Typed hooks provide better TypeScript inference and catch type errors at compile time.
 
 ## 📋 Custom Rules
 

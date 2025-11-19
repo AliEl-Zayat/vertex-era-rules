@@ -7,6 +7,8 @@ import type { Linter } from 'eslint';
  * - TypeScript recommended, stylistic, and strict rules
  * - Import management and sorting
  * - Prettier integration
+ * - TypeScript naming conventions (Type prefix: T, Interface prefix: I)
+ * - Redux typed hooks enforcement (useAppSelector, useAppDispatch)
  *
  * This preset does NOT include any custom rules.
  * Use 'recommended' or 'strict' presets to enable custom rules.

@@ -98,7 +98,17 @@ The base configs now work without type information. If you see this error after 
 pnpm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git
 ```
 
-## Available Rules
+## Built-in Rules
+
+### TypeScript Naming
+- Type aliases must start with `T` (e.g., `TUser`, `TApiResponse`)
+- Interfaces must start with `I` (e.g., `IUser`, `IApiResponse`)
+
+### Redux Typed Hooks
+- Must use `useAppSelector` instead of `useSelector`
+- Must use `useAppDispatch` instead of `useDispatch`
+
+## Custom Rules
 
 - `custom/one-component-per-file` - One React component per file
 - `custom/no-empty-catch` - No empty catch blocks

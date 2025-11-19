@@ -6,6 +6,9 @@ import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
 import unusedImportsPlugin from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
 
+import { namingConfig } from '../naming.js';
+import { reduxConfig } from '../redux.js';
+
 /**
  * Base configuration preset for @vertex-era-rules
  *
@@ -14,6 +17,8 @@ import tseslint from 'typescript-eslint';
  * - TypeScript recommended, stylistic, and strict rules
  * - Import management and sorting
  * - Prettier integration
+ * - TypeScript naming conventions (Type prefix: T, Interface prefix: I)
+ * - Redux typed hooks enforcement (useAppSelector, useAppDispatch)
  *
  * This preset does NOT include any custom rules.
  * Use 'recommended' or 'strict' presets to enable custom rules.
@@ -138,4 +143,10 @@ export const baseConfig: Linter.Config[] = [
 			},
 		},
 	},
+
+	// TypeScript naming conventions (type prefix: T, interface prefix: I)
+	namingConfig,
+
+	// Redux typed hooks enforcement
+	reduxConfig,
 ];
