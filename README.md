@@ -20,33 +20,30 @@ A production-ready ESLint plugin featuring 12 custom rules designed to enforce b
 
 ## 📦 Installation
 
-### npm
+### Install from GitHub
 
 ```bash
-npm install --save-dev @vertex-era-rules
+# Using npm
+npm install --save-dev git+https://github.com/AliEl-Zayat/vertex-era-rules.git
+
+# Using yarn
+yarn add --dev git+https://github.com/AliEl-Zayat/vertex-era-rules.git
+
+# Using pnpm
+pnpm add --save-dev git+https://github.com/AliEl-Zayat/vertex-era-rules.git
 ```
 
-### yarn
+### Install specific version/branch/tag
 
 ```bash
-yarn add --dev @vertex-era-rules
-```
+# Install from a specific branch
+npm install --save-dev git+https://github.com/AliEl-Zayat/vertex-era-rules.git#main
 
-### yalc (Local Development)
+# Install from a specific tag
+npm install --save-dev git+https://github.com/AliEl-Zayat/vertex-era-rules.git#v1.0.0
 
-For local testing before publishing:
-
-```bash
-# Install yalc globally (if not already installed)
-npm install -g yalc
-
-# In the package directory
-npm run build
-npm run yalc:publish
-
-# In your project
-yalc add @vertex-era-rules
-npm install
+# Install from a specific commit
+npm install --save-dev git+https://github.com/AliEl-Zayat/vertex-era-rules.git#8c620d6
 ```
 
 #### Hot-Reloading with yalc
