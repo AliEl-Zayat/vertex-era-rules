@@ -2,6 +2,46 @@
 
 ## Common Issues and Solutions
 
+### Error: "You have used a rule which requires type information"
+
+**Problem:** You're using type-aware TypeScript rules without configuring `parserOptions.project`.
+
+**Solution:**
+
+The base and recommended configs now avoid type-aware rules by default. If you see this error, you have two options:
+
+**Option 1: Remove type-aware rules (Recommended)**
+
+The package now works without type-aware rules by default. Just use the standard configs:
+
+```javascript
+import vertexEraRules from '@vertex-era/eslint-rules';
+
+export default [
+  ...vertexEraRules.configs.recommended,
+];
+```
+
+**Option 2: Enable type-aware rules (Advanced)**
+
+If you specifically want type-aware rules, use the `typeAware` config and configure the parser:
+
+```javascript
+import vertexEraRules from '@vertex-era/eslint-rules';
+
+export default [
+  ...vertexEraRules.configs.recommended,
+  ...vertexEraRules.configs.typeAware,
+  {
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+  },
+];
+```
+
 ### Error: "vertexEraRules.configs is not iterable"
 
 **Problem:** You're trying to spread the `configs` object itself instead of a specific config array.

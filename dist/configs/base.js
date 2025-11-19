@@ -35,15 +35,9 @@ export const baseConfig = [
             },
         },
         rules: {
-            // Type-aware rules
-            '@typescript-eslint/prefer-optional-chain': 'error',
-            '@typescript-eslint/non-nullable-type-assertion-style': 'error',
-            '@typescript-eslint/prefer-string-starts-ends-with': 'error',
-            '@typescript-eslint/prefer-find': 'error',
-            '@typescript-eslint/prefer-includes': 'error',
+            // Non-type-aware rules (safe to use without project config)
             '@typescript-eslint/consistent-generic-constructors': 'error',
             '@typescript-eslint/array-type': 'error',
-            '@typescript-eslint/no-unsafe-argument': 'error',
             '@typescript-eslint/no-explicit-any': 'error',
             '@typescript-eslint/no-non-null-assertion': 'warn',
             '@typescript-eslint/ban-tslint-comment': 'error',

@@ -6,6 +6,7 @@
 import { baseConfig } from '../configs/base.js';
 import { recommendedConfig } from '../configs/recommended.js';
 import { strictConfig } from '../configs/strict.js';
+import { typeAwareConfig } from '../configs/type-aware.js';
 import componentRules from '../eslint-plugin-custom/rules/component/eslint-plugin-component-rules.js';
 import errorHandlingRules from '../eslint-plugin-custom/rules/error-handling/eslint-plugin-error-handling-rules.js';
 import formsRules from '../eslint-plugin-custom/rules/forms/eslint-plugin-forms-rules.js';
@@ -41,6 +42,7 @@ const configs = {
     base: baseConfig,
     recommended: recommendedConfig,
     strict: strictConfig,
+    typeAware: typeAwareConfig,
 };
 // Plugin definition
 const plugin = {

@@ -146,10 +146,12 @@ export default [...vertexEraRules.configs.base];
 **Includes:**
 
 - ESLint recommended rules
-- TypeScript recommended, stylistic, and strict rules
+- TypeScript recommended, stylistic, and strict rules (non-type-aware)
 - Import sorting and management
 - Prettier integration
 - React configuration
+
+**Note:** The base config does NOT include type-aware rules to avoid requiring `parserOptions.project`. See the Type-Aware Configuration section below if you need those rules.
 
 #### Recommended Configuration
 
@@ -187,6 +189,37 @@ export default [...vertexEraRules.configs.strict];
 - `svg-currentcolor`
 - `memoized-export`
 - `no-response-data-return`
+
+#### Type-Aware Configuration (Optional)
+
+Enable TypeScript type-aware rules for enhanced type checking:
+
+```javascript
+import vertexEraRules from '@vertex-era/eslint-rules';
+
+export default [
+	...vertexEraRules.configs.recommended,
+	...vertexEraRules.configs.typeAware,  // Add type-aware rules
+	{
+		languageOptions: {
+			parserOptions: {
+				project: './tsconfig.json',  // Required for type-aware rules
+			},
+		},
+	},
+];
+```
+
+**Type-aware rules enabled:**
+
+- `@typescript-eslint/prefer-optional-chain`
+- `@typescript-eslint/non-nullable-type-assertion-style`
+- `@typescript-eslint/prefer-string-starts-ends-with`
+- `@typescript-eslint/prefer-find`
+- `@typescript-eslint/prefer-includes`
+- `@typescript-eslint/no-unsafe-argument`
+
+**Note:** Type-aware rules require `parserOptions.project` to be configured and can slow down linting. Only use if you need these specific rules.
 
 ### Custom Configuration
 
