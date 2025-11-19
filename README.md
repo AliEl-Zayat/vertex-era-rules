@@ -114,15 +114,22 @@ export default [
 
 The easiest way to get started is with the recommended preset:
 
-```typescript
-// eslint.config.ts
-import vertexEraRules from '@vertex-era-rules';
+```javascript
+// eslint.config.mjs or eslint.config.js
+import vertexEraRules from '@vertex-era/eslint-rules';
 
 export default [
-	...vertexEraRules.configs.recommended,
-	// Your custom overrides
+	...vertexEraRules.configs.recommended,  // ✅ Spread the array
+	{
+		// Your custom overrides
+		rules: {
+			'custom/no-inline-objects': 'warn',
+		},
+	},
 ];
 ```
+
+**Important:** Make sure to spread the config array (`.configs.recommended`), not the configs object itself.
 
 ### Configuration Presets
 
@@ -130,8 +137,8 @@ export default [
 
 Core TypeScript, import management, and Prettier rules without custom rules:
 
-```typescript
-import vertexEraRules from '@vertex-era-rules';
+```javascript
+import vertexEraRules from '@vertex-era/eslint-rules';
 
 export default [...vertexEraRules.configs.base];
 ```
@@ -148,8 +155,8 @@ export default [...vertexEraRules.configs.base];
 
 Extends base with commonly used custom rules (suitable for most projects):
 
-```typescript
-import vertexEraRules from '@vertex-era-rules';
+```javascript
+import vertexEraRules from '@vertex-era/eslint-rules';
 
 export default [...vertexEraRules.configs.recommended];
 ```
