@@ -1,0 +1,74 @@
+{
+	"name": "@vertex-era-rules",
+	"version": "1.0.0",
+	"description": "Comprehensive ESLint plugin with custom rules for React/TypeScript projects",
+	"type": "module",
+	"keywords": [
+		"eslint",
+		"eslint-plugin",
+		"typescript",
+		"react",
+		"linting",
+		"code-quality"
+	],
+	"author": "Vertex Era",
+	"license": "MIT",
+	"main": "./dist/src/index.js",
+	"module": "./dist/src/index.js",
+	"types": "./dist/src/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"import": "./dist/src/index.js",
+			"require": "./dist/src/index.js"
+		},
+		"./configs/*": {
+			"types": "./dist/configs/*.d.ts",
+			"import": "./dist/configs/*.mjs",
+			"require": "./dist/configs/*.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE",
+		"CHANGELOG.md"
+	],
+	"scripts": {
+		"build": "tsc -p ../tsconfig.build.json",
+		"build:watch": "tsc -p ../tsconfig.build.json --watch",
+		"test": "vitest --run",
+		"test:watch": "vitest",
+		"lint": "eslint .",
+		"prepublishOnly": "npm run build && npm test",
+		"yalc:publish": "npm run build && yalc publish",
+		"yalc:push": "npm run build && yalc push"
+	},
+	"peerDependencies": {
+		"eslint": "^9.0.0",
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@typescript-eslint/utils": "^8.0.0",
+		"@typescript-eslint/parser": "^8.0.0"
+	},
+	"devDependencies": {
+		"@types/eslint": "^9.0.0",
+		"@types/node": "^24.0.0",
+		"eslint": "^9.0.0",
+		"typescript": "^5.0.0",
+		"vitest": "^4.0.0",
+		"fast-check": "^4.0.0"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vertex-era/eslint-rules.git"
+	},
+	"bugs": {
+		"url": "https://github.com/vertex-era/eslint-rules/issues"
+	},
+	"homepage": "https://github.com/vertex-era/eslint-rules#readme"
+}
