@@ -16,7 +16,6 @@ import namingRules from '../eslint-plugin-custom/rules/naming/eslint-plugin-nami
 import readabilityRules from '../eslint-plugin-custom/rules/readability/eslint-plugin-readability-rules.js';
 import servicesRules from '../eslint-plugin-custom/rules/services/eslint-plugin-services-rules.js';
 // Aggregate all custom rules
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rules = {
     // Component rules
     'one-component-per-file': componentRules['one-component-per-file'],

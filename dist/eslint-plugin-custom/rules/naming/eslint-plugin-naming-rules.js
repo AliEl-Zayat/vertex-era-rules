@@ -33,11 +33,13 @@ const namingRules = {
                 booleanNaming: "Boolean variable '{{name}}' should start with one of [{{prefixes}}] followed by a capital letter for better readability. Example: '{{prefix}}{{suggestedName}}'",
             },
         },
-        defaultOptions: [{ prefix: 'is', allowedPrefixes: ['as', 'with'] }],
+        defaultOptions: [
+            { prefix: 'is', allowedPrefixes: ['has', 'should', 'can', 'will', 'as', 'with'] },
+        ],
         create(context) {
             const options = context.options[0] || {};
             const prefix = options.prefix || 'is';
-            const allowedPrefixes = options.allowedPrefixes || [];
+            const allowedPrefixes = options.allowedPrefixes || ['has', 'should', 'can', 'will', 'as', 'with'];
             const allPrefixes = [prefix, ...allowedPrefixes];
             function checkBooleanNaming(name, node) {
                 // Early return: check if name follows the convention
@@ -80,6 +82,19 @@ const namingRules = {
             function hasExplicitBooleanAnnotation(node) {
                 return checkHasExplicitBooleanAnnotation(node);
             }
+            function isBooleanLiteral(node) {
+                if (!node)
+                    return false;
+                // Check for boolean literals (true/false)
+                if (node.type === 'Literal' && typeof node.value === 'boolean') {
+                    return true;
+                }
+                // Check for boolean expressions (!something, !!something)
+                if (node.type === 'UnaryExpression' && node.operator === '!') {
+                    return true;
+                }
+                return false;
+            }
             return {
                 VariableDeclarator(node) {
                     try {
@@ -93,8 +108,12 @@ const namingRules = {
                             if (hasExplicitBooleanAnnotation(node.id)) {
                                 checkBooleanNaming(name, node.id);
                             }
+                            else if (node.init && isBooleanLiteral(node.init)) {
+                                // Check for boolean literal initialization (true/false)
+                                checkBooleanNaming(name, node.id);
+                            }
                             else if (node.init && isBooleanType(node.init)) {
-                                // Check inferred type from initialization
+                                // Check inferred type from initialization (requires type info)
                                 checkBooleanNaming(name, node.id);
                             }
                         }
