@@ -1,11 +1,11 @@
 /**
- * @vertex-era-rules
+ * @vertex-era/eslint-rules
  *
  * Comprehensive ESLint plugin with custom rules for React/TypeScript projects
  *
  * @example
  * ```typescript
- * import vertexEraRules from '@vertex-era-rules';
+ * import vertexEraRules from '@vertex-era/eslint-rules';
  *
  * export default [
  *   ...vertexEraRules.configs.recommended,

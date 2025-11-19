@@ -13,10 +13,14 @@
  * ];
  * ```
  */
+
 import type { ESLint, Linter } from 'eslint';
 import plugin from './plugin.js';
+
+// Export the plugin as default
 export default plugin;
+
+// Named exports for convenience
 export { plugin };
-export declare const configs: Record<string, Linter.Config>;
-export declare const rules: ESLint.Plugin['rules'];
-//# sourceMappingURL=index.d.ts.map
+export const configs: Record<string, Linter.Config> = plugin.configs;
+export const rules: ESLint.Plugin['rules'] = plugin.rules;

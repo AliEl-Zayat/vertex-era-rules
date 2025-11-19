@@ -1,9 +1,8 @@
 /**
- * Main plugin entry point for @vertex-era-rules
+ * Main plugin entry point for @vertex-era/eslint-rules
  *
  * This file exports the ESLint plugin with all custom rules and configurations.
  */
-import type { ESLint } from 'eslint';
-declare const plugin: ESLint.Plugin;
+declare const plugin: any;
 export default plugin;
 //# sourceMappingURL=plugin.d.ts.map

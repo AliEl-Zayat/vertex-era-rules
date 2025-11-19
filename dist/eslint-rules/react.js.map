@@ -1,1 +1,0 @@
-{"version":3,"file":"react.js","sourceRoot":"","sources":["../../eslint-rules/react.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,MAAM,WAAW,GAAkB;IACzC,KAAK,EAAE,CAAC,sBAAsB,CAAC;IAC/B,KAAK,EAAE;QACN,0BAA0B,EAAE,KAAK;QACjC,YAAY,EAAE,OAAO;KACrB;IACD,QAAQ,EAAE;QACT,KAAK,EAAE;YACN,OAAO,EAAE,QAAQ;SACjB;KACD;CACD,CAAC"}
