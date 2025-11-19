@@ -187,10 +187,12 @@ export default [...vertexEraRules.configs.strict];
 **Additional rules enabled:**
 
 - `form-config-extraction`
-- `single-svg-per-file`
-- `svg-currentcolor`
-- `memoized-export`
+- `single-svg-per-file` (icon files only)
+- `svg-currentcolor` (icon files only)
+- `memoized-export` (icon files only)
 - `no-response-data-return`
+
+**Note:** Icon rules only apply to files matching: `**/icons/**/*.{ts,tsx}`, `**/icon/**/*.{ts,tsx}`, or `**/*Icon.{ts,tsx}`
 
 #### Type-Aware Configuration (Optional)
 
@@ -436,6 +438,11 @@ const form = useForm(USER_FORM_CONFIG);
 ---
 
 ### Icon Rules
+
+**Note:** These rules only apply to icon files matching:
+- `**/icons/**/*.{ts,tsx}`
+- `**/icon/**/*.{ts,tsx}`
+- `**/*Icon.{ts,tsx}`
 
 #### `custom/single-svg-per-file`
 
