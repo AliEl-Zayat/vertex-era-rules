@@ -18,6 +18,8 @@ import plugin from './plugin.js';
 export default plugin;
 // Named exports for convenience
 export { plugin };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const configs = plugin.configs;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const rules = plugin.rules;
 //# sourceMappingURL=index.js.map

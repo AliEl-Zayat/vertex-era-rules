@@ -4,6 +4,8 @@
  * This file exports the ESLint plugin with all custom rules and configurations.
  */
 
+import type { ESLint, Linter } from 'eslint';
+
 import { baseConfig } from '../configs/base.js';
 import { recommendedConfig } from '../configs/recommended.js';
 import { strictConfig } from '../configs/strict.js';
@@ -18,7 +20,8 @@ import readabilityRules from '../eslint-plugin-custom/rules/readability/eslint-p
 import servicesRules from '../eslint-plugin-custom/rules/services/eslint-plugin-services-rules.js';
 
 // Aggregate all custom rules
-const rules = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const rules: Record<string, any> = {
 	// Component rules
 	'one-component-per-file': componentRules['one-component-per-file'],
 
@@ -55,8 +58,18 @@ const configs = {
 	typeAware: typeAwareConfig,
 };
 
+// Define plugin type
+type VertexEraPlugin = ESLint.Plugin & {
+	configs: {
+		base: Linter.Config[];
+		recommended: Linter.Config[];
+		strict: Linter.Config[];
+		typeAware: Linter.Config[];
+	};
+};
+
 // Plugin definition
-const plugin: any = {
+const plugin: VertexEraPlugin = {
 	meta: {
 		name: '@vertex-era/eslint-rules',
 		version: '1.0.0',
@@ -65,4 +78,5 @@ const plugin: any = {
 	configs,
 };
 
+// eslint-disable-next-line custom/memoized-export
 export default plugin;

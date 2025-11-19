@@ -14,7 +14,6 @@
  * ```
  */
 
-import type { ESLint, Linter } from 'eslint';
 import plugin from './plugin.js';
 
 // Export the plugin as default
@@ -22,5 +21,9 @@ export default plugin;
 
 // Named exports for convenience
 export { plugin };
-export const configs: Record<string, Linter.Config> = plugin.configs;
-export const rules: ESLint.Plugin['rules'] = plugin.rules;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const configs: any = plugin.configs;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const rules: any = plugin.rules;

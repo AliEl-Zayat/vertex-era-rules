@@ -39,11 +39,6 @@ export const strictConfig: Linter.Config[] = [
 			// Forms rules (NEW in strict)
 			'custom/form-config-extraction': 'error',
 
-			// Icon rules (NEW in strict)
-			'custom/single-svg-per-file': 'error',
-			'custom/svg-currentcolor': 'error',
-			'custom/memoized-export': 'error',
-
 			// JSX rules (already in recommended)
 			'custom/no-inline-objects': 'error',
 			'custom/no-inline-functions': 'error',
@@ -56,6 +51,18 @@ export const strictConfig: Linter.Config[] = [
 
 			// Services rules (NEW in strict)
 			'custom/no-response-data-return': 'error',
+		},
+	},
+	// Icon rules - only apply to icon files
+	{
+		files: ['**/icons/**/*.{ts,tsx}', '**/icon/**/*.{ts,tsx}', '**/*Icon.{ts,tsx}'],
+		plugins: {
+			custom: customPlugin,
+		},
+		rules: {
+			'custom/single-svg-per-file': 'error',
+			'custom/svg-currentcolor': 'error',
+			'custom/memoized-export': 'error',
 		},
 	},
 ];
