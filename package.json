@@ -1,5 +1,5 @@
 {
-	"name": "@vertex-era-rules",
+	"name": "@vertex-era/eslint-rules",
 	"version": "1.0.0",
 	"description": "Comprehensive ESLint plugin with custom rules for React/TypeScript projects",
 	"type": "module",
