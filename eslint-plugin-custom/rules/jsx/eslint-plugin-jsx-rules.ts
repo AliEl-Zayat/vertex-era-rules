@@ -6,7 +6,7 @@ import {
 	isInlineFunction,
 	isInlineObject,
 	validateJSXAttributeStructure,
-} from '../../utils/jsx-helpers';
+} from '../../utils/jsx-helpers.js';
 
 const jsxRules = {
 	'no-inline-objects': {

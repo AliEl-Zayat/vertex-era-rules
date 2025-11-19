@@ -1,4 +1,4 @@
-import { getAttributeName, getPropValue, isInlineFunction, isInlineObject, validateJSXAttributeStructure, } from '../../utils/jsx-helpers';
+import { getAttributeName, getPropValue, isInlineFunction, isInlineObject, validateJSXAttributeStructure, } from '../../utils/jsx-helpers.js';
 const jsxRules = {
     'no-inline-objects': {
         meta: {

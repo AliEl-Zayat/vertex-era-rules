@@ -1,6 +1,6 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
-import { isIdentifier, isVariableDeclarator } from '../../utils/ast-helpers';
-import { hasExplicitBooleanAnnotation as checkHasExplicitBooleanAnnotation, isBooleanType as checkIsBooleanType, } from '../../utils/type-helpers';
+import { isIdentifier, isVariableDeclarator } from '../../utils/ast-helpers.js';
+import { hasExplicitBooleanAnnotation as checkHasExplicitBooleanAnnotation, isBooleanType as checkIsBooleanType, } from '../../utils/type-helpers.js';
 const createRule = ESLintUtils.RuleCreator((name) => `https://github.com/your-org/eslint-plugin-custom/blob/main/docs/rules/${name}.md`);
 const namingRules = {
     'boolean-naming-convention': createRule({

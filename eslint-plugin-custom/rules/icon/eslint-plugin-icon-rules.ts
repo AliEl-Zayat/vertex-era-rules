@@ -1,6 +1,6 @@
 import type { TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { validateExportDefaultDeclaration, validateJSXElement } from '../../utils/ast-helpers';
+import { validateExportDefaultDeclaration, validateJSXElement } from '../../utils/ast-helpers.js';
 
 interface IColorIssue {
 	attribute: string;

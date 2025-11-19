@@ -1,4 +1,4 @@
-import { validateExportDefaultDeclaration, validateJSXElement } from '../../utils/ast-helpers';
+import { validateExportDefaultDeclaration, validateJSXElement } from '../../utils/ast-helpers.js';
 // Performance optimization: Cache expensive color detection results
 const colorCache = new WeakMap();
 const multiColorCache = new WeakMap();

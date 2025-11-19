@@ -1,11 +1,11 @@
 import type { TSESTree } from '@typescript-eslint/utils';
 import { ESLintUtils } from '@typescript-eslint/utils';
 
-import { isIdentifier, isVariableDeclarator } from '../../utils/ast-helpers';
+import { isIdentifier, isVariableDeclarator } from '../../utils/ast-helpers.js';
 import {
 	hasExplicitBooleanAnnotation as checkHasExplicitBooleanAnnotation,
 	isBooleanType as checkIsBooleanType,
-} from '../../utils/type-helpers';
+} from '../../utils/type-helpers.js';
 
 const createRule = ESLintUtils.RuleCreator(
 	(name) => `https://github.com/your-org/eslint-plugin-custom/blob/main/docs/rules/${name}.md`,
