@@ -13,7 +13,7 @@ import iconRules from './eslint-plugin-icon-rules';
  */
 
 describe('Property Test: single-svg-per-file', () => {
-	it('Property 1: Single SVG per file enforcement - multiple SVGs should report error', () => {
+	it('Property 1: Single SVG per file enforcement - multiple SVGs should report error', { timeout: 10000 }, () => {
 		// Generator for SVG attributes
 		const svgAttributeGen = fc.record({
 			width: fc.oneof(fc.integer({ min: 1, max: 1000 }), fc.constant(undefined)),

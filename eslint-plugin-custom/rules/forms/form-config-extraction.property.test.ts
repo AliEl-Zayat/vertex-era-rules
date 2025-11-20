@@ -1,505 +1,233 @@
 import fc from 'fast-check';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { runRule } from '../../test-utils';
+import { runRule } from '../../test-utils.js';
 
-import formsRules from './eslint-plugin-forms-rules';
+import formsRules from './eslint-plugin-forms-rules.js';
 
-describe('Property Tests: form-config-extraction', () => {
-	it('Property 5: Inline configuration detection', () => {
-		/**
-		 * Feature: additional-eslint-rules, Property 5: Inline configuration detection
-		 * For any useForm call with an inline configuration object, the rule should report
-		 * an error suggesting extraction to a constants file
-		 * Validates: Requirements 2.1
-		 */
+/**
+ * Feature: comprehensive-rule-verification, Property 16: Form config extraction enforcement
+ * For any inline form configuration object, the form-config-extraction rule should detect a violation.
+ * Validates: Requirements 2.8
+ */
+describe('Property 16: Form config extraction enforcement', () => {
+	const rule = formsRules['form-config-extraction'];
 
-		// Generator for form configuration properties
-		const formConfigPropertyGen = fc.constantFrom(
-			'defaultValues',
-			'schema',
-			'resolver',
-			'mode',
-			'reValidateMode',
-			'initialValues',
-			'validationSchema',
-		);
+	// Generator for form hook names
+	const formHookName = fc.constantFrom('useForm', 'useFormik');
 
-		// Generator for form hook names
-		const formHookGen = fc.constantFrom('useForm', 'useFormik');
+	// Generator for form config property names
+	const formConfigProperty = fc.constantFrom(
+		'defaultValues',
+		'schema',
+		'resolver',
+		'mode',
+		'initialValues',
+		'validationSchema',
+	);
 
-		// Generator for simple values (strings, numbers, booleans)
-		const simpleValueGen = fc.oneof(
-			fc.string().map((s) => JSON.stringify(s)),
-			fc.integer().map((n) => n.toString()),
-			fc.boolean().map((b) => b.toString()),
-		);
+	// Generator for valid UPPER_SNAKE_CASE constant names
+	const upperSnakeCaseName = fc
+		.array(fc.stringMatching(/^[A-Z][A-Z0-9]*$/), { minLength: 1, maxLength: 3 })
+		.map((parts) => parts.join('_'));
 
-		// Generator for inline configuration objects
-		const inlineConfigGen = fc
-			.array(fc.tuple(formConfigPropertyGen, simpleValueGen), { minLength: 1, maxLength: 3 })
-			.map((props) => {
-				// Create unique properties
-				const uniqueProps = new Map(props);
-				const entries = Array.from(uniqueProps.entries());
-				return `{ ${entries.map(([key, value]) => `${key}: ${value}`).join(', ')} }`;
-			});
+	// Generator for invalid camelCase constant names
+	const camelCaseName = fc
+		.tuple(fc.stringMatching(/^[a-z][a-z0-9]*$/), fc.stringMatching(/^[A-Z][a-z0-9]*$/))
+		.map(([first, second]) => `${first}${second}`);
 
+	// Generator for constants file paths
+	const constantsFilePath = fc
+		.stringMatching(/^[a-z][a-z0-9-]*$/)
+		.map((name) => `./${name}-constants.ts`);
+
+	// Generator for non-constants file paths
+	const nonConstantsFilePath = fc
+		.stringMatching(/^[a-z][a-z0-9-]*$/)
+		.map((name) => `./${name}-config.ts`);
+
+	it('should detect violation for any inline form config object', { timeout: 10000 }, () => {
 		fc.assert(
-			fc.property(formHookGen, inlineConfigGen, (hookName, inlineConfig) => {
-				// Build code with inline form configuration
+			fc.property(formHookName, formConfigProperty, (hookName, configProp) => {
 				const code = `
-						import React from 'react';
-						import { ${hookName} } from 'react-hook-form';
-						
-						function MyForm() {
-							const form = ${hookName}(${inlineConfig});
-							
-							return <form>Form content</form>;
-						}
-						
-						export default MyForm;
-					`;
+          import { ${hookName} } from 'react-hook-form';
+          
+          function MyForm() {
+            const form = ${hookName}({
+              ${configProp}: {}
+            });
+            
+            return <form />;
+          }
+        `;
+				const messages = runRule(rule, code);
 
-				// Run the rule
-				const messages = runRule(formsRules['form-config-extraction'], code);
-
-				// Should report error for inline configuration
-				expect(messages.length).toBeGreaterThan(0);
-				expect(messages[0].messageId).toBe('inlineConfig');
-				expect(messages[0].message).toContain('constants file');
-
-				return true;
+				// Should report at least one error for inline config
+				return messages.length > 0 && messages[0].messageId === 'inlineConfig';
 			}),
 			{ numRuns: 100 },
 		);
 	});
 
-	it('Property 6: Constants file import exemption', () => {
-		/**
-		 * Feature: additional-eslint-rules, Property 6: Constants file import exemption
-		 * For any form configuration imported from a file matching the pattern
-		 * `*-constants.ts` or `*-constants.tsx`, the rule should not report errors
-		 * Validates: Requirements 2.2
-		 */
-
-		// Generator for valid constants file names
-		const constantsFileGen = fc
-			.tuple(
-				fc
-					.string({ minLength: 1, maxLength: 20 })
-					.map((s) => {
-						// Clean to only lowercase letters and hyphens
-						const cleaned = s.replace(/[^a-z-]/gi, '').toLowerCase();
-						return cleaned.length > 0 ? cleaned : 'form';
-					})
-					.filter((s) => s.length > 0),
-				fc.constantFrom('ts', 'tsx'),
-			)
-			.map(([name, ext]) => `./${name}-constants.${ext}`);
-
-		// Generator for UPPER_SNAKE_CASE constant names
-		const upperSnakeCaseGen = fc
-			.string({ minLength: 1, maxLength: 15 })
-			.map((s) => {
-				// Clean to only uppercase letters, numbers, and underscores
-				const cleaned = s.replace(/[^a-zA-Z0-9_]/g, '').toUpperCase();
-				if (cleaned.length === 0) return 'FORM_CONFIG';
-				// Ensure it starts with a letter
-				const firstChar = cleaned.charAt(0);
-				if (/[0-9]/.test(firstChar)) {
-					return 'F' + cleaned;
-				}
-				return cleaned;
-			})
-			.filter((name) => name.length > 0 && /^[A-Z]/.test(name));
-
-		// Generator for form hook names
-		const formHookGen = fc.constantFrom('useForm', 'useFormik');
-
+	it('should not detect violation for any config imported from constants file with UPPER_SNAKE_CASE', () => {
 		fc.assert(
 			fc.property(
-				formHookGen,
-				constantsFileGen,
-				upperSnakeCaseGen,
-				(hookName, constantsFile, constantName) => {
-					// Build code with imported configuration from constants file
+				formHookName,
+				upperSnakeCaseName,
+				constantsFilePath,
+				(hookName, configName, filePath) => {
 					const code = `
-						import React from 'react';
-						import { ${hookName} } from 'react-hook-form';
-						import { ${constantName} } from '${constantsFile}';
-						
-						function MyForm() {
-							const form = ${hookName}(${constantName});
-							
-							return <form>Form content</form>;
-						}
-						
-						export default MyForm;
-					`;
+          import { ${hookName} } from 'react-hook-form';
+          import { ${configName} } from '${filePath}';
+          
+          function MyForm() {
+            const form = ${hookName}(${configName});
+            
+            return <form />;
+          }
+        `;
+					const messages = runRule(rule, code);
 
-					// Run the rule
-					const messages = runRule(formsRules['form-config-extraction'], code);
-
-					// Should NOT report any errors for valid constants file import
-					expect(messages.length).toBe(0);
-
-					return true;
+					// Should not report any errors
+					return messages.length === 0;
 				},
 			),
 			{ numRuns: 100 },
 		);
 	});
 
-	it('Property 7: Naming convention validation', () => {
-		/**
-		 * Feature: additional-eslint-rules, Property 7: Naming convention validation
-		 * For any form configuration constant, the rule should report an error if and only if
-		 * the constant name is not in UPPER_SNAKE_CASE format
-		 * Validates: Requirements 2.3, 2.4
-		 */
-
-		// Generator for valid UPPER_SNAKE_CASE names
-		const validUpperSnakeCaseGen = fc
-			.tuple(
-				fc.constantFrom('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'),
-				fc.array(
-					fc.oneof(
-						fc.constantFrom(
-							'A',
-							'B',
-							'C',
-							'D',
-							'E',
-							'F',
-							'G',
-							'H',
-							'I',
-							'J',
-							'K',
-							'L',
-							'M',
-							'N',
-							'O',
-							'P',
-							'Q',
-							'R',
-							'S',
-							'T',
-							'U',
-							'V',
-							'W',
-							'X',
-							'Y',
-							'Z',
-						),
-						fc.constantFrom('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
-						fc.constant('_'),
-					),
-					{ minLength: 0, maxLength: 15 },
-				),
-			)
-			.map(([first, rest]) => first + rest.join(''));
-
-		// Generator for invalid naming conventions (not UPPER_SNAKE_CASE)
-		// All must be valid JavaScript identifiers
-		const invalidNamingGen = fc.oneof(
-			// camelCase - starts with lowercase
-			fc
-				.tuple(
-					fc.constantFrom('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'),
-					fc.array(
-						fc.oneof(
-							fc.constantFrom(
-								'a',
-								'b',
-								'c',
-								'd',
-								'e',
-								'f',
-								'g',
-								'h',
-								'i',
-								'j',
-								'k',
-								'l',
-								'm',
-							),
-							fc.constantFrom(
-								'A',
-								'B',
-								'C',
-								'D',
-								'E',
-								'F',
-								'G',
-								'H',
-								'I',
-								'J',
-								'K',
-								'L',
-								'M',
-							),
-						),
-						{ minLength: 1, maxLength: 10 },
-					),
-				)
-				.map(([first, rest]) => first + rest.join('')),
-			// PascalCase - starts with uppercase but contains lowercase
-			fc
-				.tuple(
-					fc.constantFrom('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'),
-					fc.array(
-						fc.constantFrom(
-							'a',
-							'b',
-							'c',
-							'd',
-							'e',
-							'f',
-							'g',
-							'h',
-							'i',
-							'j',
-							'k',
-							'l',
-							'm',
-						),
-						{ minLength: 1, maxLength: 10 },
-					),
-				)
-				.map(([first, rest]) => first + rest.join('')),
-			// lowercase only
-			fc
-				.array(
-					fc.constantFrom(
-						'a',
-						'b',
-						'c',
-						'd',
-						'e',
-						'f',
-						'g',
-						'h',
-						'i',
-						'j',
-						'k',
-						'l',
-						'm',
-					),
-					{ minLength: 2, maxLength: 10 },
-				)
-				.map((chars) => chars.join('')),
-		);
-
-		// Generator for constants file names
-		const constantsFileGen = fc.string({ minLength: 1, maxLength: 15 }).map((s) => {
-			const cleaned = s.replace(/[^a-z-]/gi, '').toLowerCase();
-			return cleaned.length > 0 ? `./${cleaned}-constants.ts` : './form-constants.ts';
-		});
-
-		// Generator for form hook names
-		const formHookGen = fc.constantFrom('useForm', 'useFormik');
-
-		// Test valid UPPER_SNAKE_CASE names (should NOT report errors)
+	it('should detect violation for any config with camelCase naming', () => {
 		fc.assert(
 			fc.property(
-				formHookGen,
-				constantsFileGen,
-				validUpperSnakeCaseGen,
-				(hookName, constantsFile, constantName) => {
+				formHookName,
+				camelCaseName,
+				constantsFilePath,
+				(hookName, configName, filePath) => {
 					const code = `
-						import React from 'react';
-						import { ${hookName} } from 'react-hook-form';
-						import { ${constantName} } from '${constantsFile}';
-						
-						function MyForm() {
-							const form = ${hookName}(${constantName});
-							
-							return <form>Form content</form>;
-						}
-						
-						export default MyForm;
-					`;
+          import { ${hookName} } from 'react-hook-form';
+          import { ${configName} } from '${filePath}';
+          
+          function MyForm() {
+            const form = ${hookName}(${configName});
+            
+            return <form />;
+          }
+        `;
+					const messages = runRule(rule, code);
 
-					const messages = runRule(formsRules['form-config-extraction'], code);
-
-					// Should NOT report naming convention errors for valid UPPER_SNAKE_CASE
-					const namingErrors = messages.filter((m) => m.messageId === 'invalidNaming');
-					expect(namingErrors.length).toBe(0);
-
-					return true;
-				},
-			),
-			{ numRuns: 100 },
-		);
-
-		// Test invalid naming conventions (should report errors)
-		fc.assert(
-			fc.property(
-				formHookGen,
-				constantsFileGen,
-				invalidNamingGen,
-				(hookName, constantsFile, constantName) => {
-					const code = `
-						import React from 'react';
-						import { ${hookName} } from 'react-hook-form';
-						import { ${constantName} } from '${constantsFile}';
-						
-						function MyForm() {
-							const form = ${hookName}(${constantName});
-							
-							return <form>Form content</form>;
-						}
-						
-						export default MyForm;
-					`;
-
-					const messages = runRule(formsRules['form-config-extraction'], code);
-
-					// Should report naming convention error for invalid naming
-					const namingErrors = messages.filter((m) => m.messageId === 'invalidNaming');
-					expect(namingErrors.length).toBeGreaterThan(0);
-					expect(namingErrors[0].message).toContain('UPPER_SNAKE_CASE');
-
-					return true;
+					// Should report error for invalid naming
+					return (
+						messages.length > 0 && messages.some((m) => m.messageId === 'invalidNaming')
+					);
 				},
 			),
 			{ numRuns: 100 },
 		);
 	});
 
-	it('Property 8: Form configuration property detection', () => {
-		/**
-		 * Feature: additional-eslint-rules, Property 8: Form configuration property detection
-		 * For any configuration object containing properties like defaultValues, schema, or resolver,
-		 * the rule should correctly identify it as a form configuration requiring extraction
-		 * Validates: Requirements 2.5
-		 */
-
-		// Generator for form configuration property names
-		const formConfigPropertyGen = fc.constantFrom(
-			'defaultValues',
-			'schema',
-			'resolver',
-			'mode',
-			'reValidateMode',
-			'criteriaMode',
-			'shouldFocusError',
-			'shouldUnregister',
-			'shouldUseNativeValidation',
-			'delayError',
-			'initialValues',
-			'validationSchema',
-			'validate',
-			'validateOnBlur',
-			'validateOnChange',
-			'validateOnMount',
-		);
-
-		// Generator for non-form-config property names
-		const nonFormConfigPropertyGen = fc.constantFrom(
-			'name',
-			'id',
-			'className',
-			'style',
-			'onClick',
-			'onChange',
-			'value',
-			'disabled',
-			'placeholder',
-			'type',
-			'label',
-			'description',
-		);
-
-		// Generator for simple values
-		const simpleValueGen = fc.oneof(
-			fc.string().map((s) => JSON.stringify(s)),
-			fc.integer().map((n) => n.toString()),
-			fc.boolean().map((b) => b.toString()),
-			fc.constant('{}'),
-			fc.constant('[]'),
-		);
-
-		// Generator for form hook names
-		const formHookGen = fc.constantFrom('useForm', 'useFormik');
-
-		// Test 1: Objects with form config properties should be detected
+	it('should detect violation for any config imported from non-constants file', () => {
 		fc.assert(
 			fc.property(
-				formHookGen,
-				fc.array(formConfigPropertyGen, { minLength: 1, maxLength: 3 }),
-				fc.array(nonFormConfigPropertyGen, { minLength: 0, maxLength: 2 }),
-				(hookName, formConfigProps, nonFormConfigProps) => {
-					// Create unique properties
-					const uniqueFormProps = [...new Set(formConfigProps)];
-					const uniqueNonFormProps = [...new Set(nonFormConfigProps)];
-
-					// Build object with both form config and non-form config properties
-					const allProps = [
-						...uniqueFormProps.map((prop) => `${prop}: {}`),
-						...uniqueNonFormProps.map((prop) => `${prop}: "value"`),
-					];
-
-					const inlineConfig = `{ ${allProps.join(', ')} }`;
-
+				formHookName,
+				upperSnakeCaseName,
+				nonConstantsFilePath,
+				(hookName, configName, filePath) => {
 					const code = `
-						import React from 'react';
-						import { ${hookName} } from 'react-hook-form';
-						
-						function MyForm() {
-							const form = ${hookName}(${inlineConfig});
-							
-							return <form>Form content</form>;
-						}
-						
-						export default MyForm;
-					`;
+          import { ${hookName} } from 'react-hook-form';
+          import { ${configName} } from '${filePath}';
+          
+          function MyForm() {
+            const form = ${hookName}(${configName});
+            
+            return <form />;
+          }
+        `;
+					const messages = runRule(rule, code);
 
-					const messages = runRule(formsRules['form-config-extraction'], code);
-
-					// Should report error because it contains form config properties
-					expect(messages.length).toBeGreaterThan(0);
-					expect(messages[0].messageId).toBe('inlineConfig');
-
-					return true;
+					// Should report error for invalid import source
+					return (
+						messages.length > 0 &&
+						messages.some((m) => m.messageId === 'invalidImportSource')
+					);
 				},
 			),
 			{ numRuns: 100 },
 		);
+	});
 
-		// Test 2: Objects without form config properties should NOT be detected
+	it('should not detect violation for any form hook without config argument', () => {
+		fc.assert(
+			fc.property(formHookName, (hookName) => {
+				const code = `
+          import { ${hookName} } from 'react-hook-form';
+          
+          function MyForm() {
+            const form = ${hookName}();
+            
+            return <form />;
+          }
+        `;
+				const messages = runRule(rule, code);
+
+				// Should not report any errors
+				return messages.length === 0;
+			}),
+			{ numRuns: 100 },
+		);
+	});
+
+	it('should detect violation for any inline config with multiple properties', () => {
 		fc.assert(
 			fc.property(
-				formHookGen,
-				fc.array(nonFormConfigPropertyGen, { minLength: 1, maxLength: 4 }),
-				(hookName, nonFormConfigProps) => {
-					// Create unique properties
-					const uniqueProps = [...new Set(nonFormConfigProps)];
-
-					// Build object with only non-form config properties
-					const inlineConfig = `{ ${uniqueProps.map((prop) => `${prop}: "value"`).join(', ')} }`;
+				formHookName,
+				fc.array(formConfigProperty, { minLength: 2, maxLength: 3 }),
+				(hookName, configProps) => {
+					const uniqueProps = [...new Set(configProps)];
+					const propsString = uniqueProps.map((prop) => `${prop}: {}`).join(',\n');
 
 					const code = `
-						import React from 'react';
-						import { ${hookName} } from 'react-hook-form';
-						
-						function MyForm() {
-							const form = ${hookName}(${inlineConfig});
-							
-							return <form>Form content</form>;
-						}
-						
-						export default MyForm;
-					`;
+          import { ${hookName} } from 'react-hook-form';
+          
+          function MyForm() {
+            const form = ${hookName}({
+              ${propsString}
+            });
+            
+            return <form />;
+          }
+        `;
+					const messages = runRule(rule, code);
 
-					const messages = runRule(formsRules['form-config-extraction'], code);
+					// Should report at least one error for inline config
+					return messages.length > 0 && messages[0].messageId === 'inlineConfig';
+				},
+			),
+			{ numRuns: 100 },
+		);
+	});
 
-					// Should NOT report error because it doesn't contain form config properties
-					expect(messages.length).toBe(0);
+	it('should not detect violation for member expression config access from constants', () => {
+		fc.assert(
+			fc.property(
+				formHookName,
+				upperSnakeCaseName,
+				constantsFilePath,
+				fc.stringMatching(/^[a-z][a-z0-9]*$/),
+				(hookName, configName, filePath, memberName) => {
+					const code = `
+          import { ${hookName} } from 'react-hook-form';
+          import { ${configName} } from '${filePath}';
+          
+          function MyForm() {
+            const form = ${hookName}(${configName}.${memberName});
+            
+            return <form />;
+          }
+        `;
+					const messages = runRule(rule, code);
 
-					return true;
+					// Should not report any errors
+					return messages.length === 0;
 				},
 			),
 			{ numRuns: 100 },

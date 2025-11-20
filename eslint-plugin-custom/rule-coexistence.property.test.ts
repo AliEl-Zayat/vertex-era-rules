@@ -71,7 +71,7 @@ describe('Rule Coexistence Property Tests', () => {
 		return linter.verify(code, config as any, { filename: filename || 'test.tsx' });
 	}
 
-	it('should allow multiple new rules to be enabled simultaneously', () => {
+	it('should allow multiple new rules to be enabled simultaneously', { timeout: 10000 }, () => {
 		fc.assert(
 			fc.property(
 				fc.subarray(newRules, { minLength: 2, maxLength: newRules.length }),

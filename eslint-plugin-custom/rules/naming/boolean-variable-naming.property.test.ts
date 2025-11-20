@@ -20,11 +20,20 @@ describe('Property 11: Boolean variable naming', () => {
 		.filter((s) => /^[a-zA-Z][a-zA-Z0-9_$]*$/.test(s)) // Must start with letter
 		.map((s) => `is${s.charAt(0).toUpperCase()}${s.slice(1)}`);
 
-	// Generator for invalid boolean variable names (not isXxx format)
+	// Allowed prefixes for boolean variables
+	const allowedPrefixes = ['is', 'has', 'should', 'can', 'will', 'as', 'with'];
+
+	// Generator for invalid boolean variable names (not using allowed prefixes)
 	const invalidBooleanName = fc
 		.string({ minLength: 1, maxLength: 20 })
 		.filter((s) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s))
-		.filter((s) => !/^is[A-Z]/.test(s));
+		.filter((s) => {
+			// Check if the name starts with any allowed prefix followed by uppercase letter
+			return !allowedPrefixes.some((prefix) => {
+				const pattern = new RegExp(`^${prefix}[A-Z]`);
+				return pattern.test(s);
+			});
+		});
 
 	it('should report error for any boolean variable without is prefix', () => {
 		fc.assert(
@@ -165,11 +174,20 @@ describe('Property 13: Boolean parameter naming', () => {
 		.filter((s) => /^[a-zA-Z][a-zA-Z0-9_$]*$/.test(s)) // Must start with letter
 		.map((s) => `is${s.charAt(0).toUpperCase()}${s.slice(1)}`);
 
+	// Allowed prefixes for boolean variables
+	const allowedPrefixes = ['is', 'has', 'should', 'can', 'will', 'as', 'with'];
+
 	// Generator for invalid boolean parameter names
 	const invalidBooleanName = fc
 		.string({ minLength: 1, maxLength: 20 })
 		.filter((s) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s))
-		.filter((s) => !/^is[A-Z]/.test(s));
+		.filter((s) => {
+			// Check if the name starts with any allowed prefix followed by uppercase letter
+			return !allowedPrefixes.some((prefix) => {
+				const pattern = new RegExp(`^${prefix}[A-Z]`);
+				return pattern.test(s);
+			});
+		});
 
 	it('should report error for any boolean parameter without is prefix', () => {
 		fc.assert(
@@ -226,11 +244,20 @@ describe('Property 14: Boolean property naming', () => {
 		.filter((s) => /^[a-zA-Z][a-zA-Z0-9_$]*$/.test(s)) // Must start with letter
 		.map((s) => `is${s.charAt(0).toUpperCase()}${s.slice(1)}`);
 
+	// Allowed prefixes for boolean variables
+	const allowedPrefixes = ['is', 'has', 'should', 'can', 'will', 'as', 'with'];
+
 	// Generator for invalid boolean property names
 	const invalidBooleanName = fc
 		.string({ minLength: 1, maxLength: 20 })
 		.filter((s) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s))
-		.filter((s) => !/^is[A-Z]/.test(s));
+		.filter((s) => {
+			// Check if the name starts with any allowed prefix followed by uppercase letter
+			return !allowedPrefixes.some((prefix) => {
+				const pattern = new RegExp(`^${prefix}[A-Z]`);
+				return pattern.test(s);
+			});
+		});
 
 	it('should report error for any boolean property without is prefix in interfaces', () => {
 		fc.assert(
