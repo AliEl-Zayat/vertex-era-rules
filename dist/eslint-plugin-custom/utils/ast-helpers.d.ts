@@ -119,6 +119,52 @@ export declare function isFormConfigProperty(key: string): boolean;
  */
 export declare function matchesServicePath(filename: string): boolean;
 /**
+ * React import style enum
+ */
+export declare enum ReactImportStyle {
+    NAMESPACE = "NAMESPACE",// import * as React from 'react'
+    DEFAULT_ONLY = "DEFAULT_ONLY",// import React from 'react'
+    NAMED_ONLY = "NAMED_ONLY",// import { useState } from 'react'
+    MIXED = "MIXED",// import React, { useState } from 'react'
+    NONE = "NONE"
+}
+/**
+ * Import analysis result interface
+ */
+export interface ImportAnalysisResult {
+    style: ReactImportStyle;
+    hasDefaultImport: boolean;
+    hasNamedImports: boolean;
+    hasMemoImport: boolean;
+    importNode: TSESTree.ImportDeclaration | null;
+}
+/**
+ * Analyze React import style in a program
+ * Detects namespace, default, named, mixed, or no React import
+ */
+export declare function analyzeReactImport(programNode: TSESTree.Program): ImportAnalysisResult;
+/**
+ * Icon environment enum
+ */
+export declare enum IconEnvironment {
+    REACT_WEB = "REACT_WEB",
+    REACT_NATIVE = "REACT_NATIVE"
+}
+/**
+ * Environment detection result interface
+ */
+export interface EnvironmentDetectionResult {
+    environment: IconEnvironment;
+    hasReactNativeSvgImport: boolean;
+    usesSvgComponent: boolean;
+}
+/**
+ * Detect icon environment (React web vs React Native)
+ * Checks for react-native-svg imports and <Svg> JSX elements
+ * Defaults to React web if environment cannot be determined
+ */
+export declare function detectIconEnvironment(programNode: TSESTree.Program, svgNode?: TSESTree.JSXElement): EnvironmentDetectionResult;
+/**
  * Check if a ternary operator contains nested ternaries
  */
 export declare function containsNestedTernary(node: TSESTree.ConditionalExpression): boolean;
@@ -130,4 +176,70 @@ export declare function isEffectivelyEmpty(catchClause: TSESTree.CatchClause): b
  * Check if a catch block has an intentional ignore comment
  */
 export declare function hasIntentionalIgnoreComment(catchClause: TSESTree.CatchClause, sourceCode: unknown): boolean;
+/**
+ * Import update strategy enum
+ */
+export declare enum ImportUpdateStrategy {
+    NO_UPDATE = "NO_UPDATE",// memo already available
+    ADD_TO_NAMED = "ADD_TO_NAMED",// add to existing named imports
+    ADD_NAMED_TO_DEFAULT = "ADD_NAMED_TO_DEFAULT",// add named imports to default-only import
+    CREATE_NEW_IMPORT = "CREATE_NEW_IMPORT"
+}
+/**
+ * Memo strategy interface
+ */
+export interface MemoStrategy {
+    memoReference: string;
+    needsMemoImport: boolean;
+    importUpdateStrategy: ImportUpdateStrategy;
+}
+/**
+ * Select memo strategy based on React import analysis
+ * Chooses between React.memo and memo based on import style
+ */
+export declare function selectMemoStrategy(analysis: ImportAnalysisResult): MemoStrategy;
+/**
+ * Import update interface
+ */
+export interface ImportUpdate {
+    fixes: {
+        range: [number, number];
+        text: string;
+    }[];
+    updatedImports: string[];
+}
+/**
+ * Update imports to add memo if needed
+ * Generates import modification fixes based on the strategy
+ */
+export declare function updateImports(strategy: MemoStrategy, importNode: TSESTree.ImportDeclaration | null, programNode: TSESTree.Program): ImportUpdate;
+/**
+ * Type annotation strategy interface
+ */
+export interface TypeAnnotationStrategy {
+    propsType: string;
+    needsTypeImport: boolean;
+    typeImportSource: string | null;
+    needsComponentImport: boolean;
+}
+/**
+ * Get type annotation strategy based on environment and import style
+ * Determines the appropriate props type for React web or React Native
+ */
+export declare function getTypeAnnotationStrategy(environment: IconEnvironment, importStyle: ReactImportStyle): TypeAnnotationStrategy;
+/**
+ * Type annotation fix interface
+ */
+export interface TypeAnnotationFix {
+    fixes: {
+        range: [number, number];
+        text: string;
+    }[];
+    success: boolean;
+}
+/**
+ * Add type annotation to a component
+ * Handles function declarations, arrow functions, and components with/without props
+ */
+export declare function addTypeAnnotation(componentNode: TSESTree.Node, strategy: TypeAnnotationStrategy, programNode: TSESTree.Program): TypeAnnotationFix;
 //# sourceMappingURL=ast-helpers.d.ts.map

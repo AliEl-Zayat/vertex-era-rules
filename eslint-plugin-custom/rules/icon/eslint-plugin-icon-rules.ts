@@ -1,6 +1,15 @@
 import type { TSESLint, TSESTree } from '@typescript-eslint/utils';
 
-import { validateExportDefaultDeclaration, validateJSXElement } from '../../utils/ast-helpers.js';
+import {
+	addTypeAnnotation,
+	analyzeReactImport,
+	detectIconEnvironment,
+	getTypeAnnotationStrategy,
+	selectMemoStrategy,
+	updateImports,
+	validateExportDefaultDeclaration,
+	validateJSXElement,
+} from '../../utils/ast-helpers.js';
 
 interface IColorIssue {
 	attribute: string;
@@ -159,16 +168,21 @@ const iconRules = {
 		},
 		create(context: TSESLint.RuleContext<'memoizeExport', never[]>) {
 			let exportNode: TSESTree.ExportDefaultDeclaration | null = null;
+			let svgNode: TSESTree.JSXElement | null = null;
 
 			return {
 				'JSXElement'(node: TSESTree.JSXElement) {
 					if (
 						node.openingElement.name.type === 'JSXIdentifier' &&
-						node.openingElement.name.name === 'svg'
+						(node.openingElement.name.name === 'svg' ||
+							node.openingElement.name.name === 'Svg')
 					) {
+						// Store the SVG node for environment detection
+						svgNode = node;
+
 						// If we found an SVG and we already saw an export, check it now
 						if (exportNode) {
-							checkExport(context, exportNode);
+							checkExport(context, exportNode, svgNode);
 							exportNode = null; // Clear it so we don't check again
 						}
 					}
@@ -180,7 +194,7 @@ const iconRules = {
 				'Program:exit'() {
 					// Check the export at the end if we found an SVG
 					if (exportNode) {
-						checkExport(context, exportNode);
+						checkExport(context, exportNode, svgNode);
 					}
 				},
 			};
@@ -188,6 +202,7 @@ const iconRules = {
 			function checkExport(
 				ctx: TSESLint.RuleContext<'memoizeExport', never[]>,
 				node: TSESTree.ExportDefaultDeclaration,
+				svg: TSESTree.JSXElement | null,
 			) {
 				try {
 					// Validate node structure
@@ -211,69 +226,103 @@ const iconRules = {
 								data: { componentName },
 								fix(fixer) {
 									const sourceCode = ctx.sourceCode;
-									const reactImport = getReactImport(node);
+									const programNode = sourceCode.ast;
 
-									// Add memo import if not already imported
+									// Step 1: Analyze React import style
+									const importAnalysis = analyzeReactImport(programNode);
+
+									// Step 2: Detect icon environment (React web vs React Native)
+									const envDetection = detectIconEnvironment(programNode, svg || undefined);
+
+									// Step 3: Select memo strategy
+									const memoStrategy = selectMemoStrategy(importAnalysis);
+
+									// Step 4: Get type annotation strategy
+									const typeStrategy = getTypeAnnotationStrategy(
+										envDetection.environment,
+										importAnalysis.style,
+									);
+
+									// Step 5: Generate all fixes
 									const fixes: TSESLint.RuleFix[] = [];
 
-									if (
-										!reactImport?.specifiers.some(
-											(s) =>
-												s.type === 'ImportSpecifier' &&
-												s.imported.type === 'Identifier' &&
-												s.imported.name === 'memo',
-										)
-									) {
-										if (reactImport) {
-											// Add memo to existing react import
-											const withNamedImports = reactImport.specifiers.some(
-												(s) => s.type === 'ImportSpecifier',
-											);
-											const lastSpecifier =
-												reactImport.specifiers[
-													reactImport.specifiers.length - 1
-												];
+									// Step 5a: Update imports (add memo if needed)
+									const importUpdate = updateImports(
+										memoStrategy,
+										importAnalysis.importNode,
+										programNode,
+									);
 
-											if (withNamedImports) {
-												// Already has named imports, just add memo
-												fixes.push(
-													fixer.insertTextAfter(lastSpecifier, ', memo'),
-												);
-											} else {
-												// Only has default import, need to add curly braces
-												fixes.push(
-													fixer.insertTextAfter(
-														lastSpecifier,
-														', { memo }',
-													),
+									// Convert import update fixes to RuleFix format
+									importUpdate.fixes.forEach((fix) => {
+										fixes.push(fixer.replaceTextRange(fix.range, fix.text));
+									});
+
+									// Step 5b: Handle export wrapping and type annotations
+									// For function declarations, we need special handling to avoid overlapping fixes
+									if (node.declaration.type === 'FunctionDeclaration') {
+										const functionNode = node.declaration;
+										
+										// Build the new function declaration with type annotation
+										let functionText = sourceCode.getText(functionNode);
+										
+										// Add type annotation if the function has parameters
+										if (functionNode.params.length > 0) {
+											const firstParam = functionNode.params[0];
+											if (
+												firstParam.type === 'Identifier' &&
+												!firstParam.typeAnnotation
+											) {
+												// Find the parameter in the function text and add type annotation
+												// We need to match the parameter specifically within the parameter list
+												const paramName = firstParam.name;
+												// Match the parameter within parentheses, handling optional whitespace
+												const paramPattern = new RegExp(`\\(\\s*${paramName}\\s*\\)`);
+												functionText = functionText.replace(
+													paramPattern,
+													`(${paramName}: ${typeStrategy.propsType})`,
 												);
 											}
 										} else {
-											// Add new react import with memo
-											fixes.push(
-												fixer.insertTextBefore(
-													sourceCode.ast.body[0],
-													"import { memo } from 'react';\n",
-												),
+											// If no parameters, add props parameter with type
+											// Match the empty parameter list
+											const emptyParamsPattern = /\(\s*\)/;
+											functionText = functionText.replace(
+												emptyParamsPattern,
+												`(props: ${typeStrategy.propsType})`,
 											);
 										}
-									}
-
-									// For function declarations, we need to convert to a separate declaration
-									if (node.declaration.type === 'FunctionDeclaration') {
-										const functionText = sourceCode.getText(node.declaration);
+										
+										// Replace the entire export statement with function + export
 										fixes.push(
 											fixer.replaceText(
 												node,
-												`${functionText}\n\nexport default memo(${componentName});`,
+												`${functionText}\n\nexport default ${memoStrategy.memoReference}(${componentName});`,
 											),
 										);
 									} else {
-										// Wrap export with memo
+										// For identifier exports, add type annotation to the component definition
+										const componentNode = getComponentNode(node.declaration);
+										if (componentNode) {
+											const typeAnnotationResult = addTypeAnnotation(
+												componentNode,
+												typeStrategy,
+												programNode,
+											);
+
+											// Convert type annotation fixes to RuleFix format
+											typeAnnotationResult.fixes.forEach((fix) => {
+												fixes.push(
+													fixer.replaceTextRange(fix.range, fix.text),
+												);
+											});
+										}
+										
+										// Wrap export with memo using the selected memo reference
 										fixes.push(
 											fixer.replaceText(
 												node,
-												`export default memo(${componentName});`,
+												`export default ${memoStrategy.memoReference}(${componentName});`,
 											),
 										);
 									}
@@ -441,6 +490,63 @@ function getComponentName(
 	}
 
 	// Early return: all other cases
+	return null;
+}
+
+function getComponentNode(
+	declaration: TSESTree.ExportDefaultDeclaration['declaration'],
+): TSESTree.Node | null {
+	// For identifier exports, we need to find the actual component definition
+	if (declaration.type === 'Identifier') {
+		// We need to traverse up to find the variable declaration or function declaration
+		// For now, return the identifier itself - the type annotation logic will handle it
+		let current: TSESTree.Node | undefined = declaration;
+
+		// Traverse up to find Program node
+		while (current?.parent) {
+			current = current.parent;
+			if (current.type === 'Program') {
+				break;
+			}
+		}
+
+		if (current?.type !== 'Program') {
+			return null;
+		}
+
+		// Find the variable or function declaration with this name
+		for (const statement of current.body) {
+			// Check variable declarations
+			if (statement.type === 'VariableDeclaration') {
+				for (const declarator of statement.declarations) {
+					if (
+						declarator.id.type === 'Identifier' &&
+						declarator.id.name === declaration.name
+					) {
+						return declarator;
+					}
+				}
+			}
+
+			// Check function declarations
+			if (
+				statement.type === 'FunctionDeclaration' &&
+				statement.id &&
+				statement.id.name === declaration.name
+			) {
+				return statement;
+			}
+		}
+
+		return null;
+	}
+
+	// For function declarations, return the declaration itself
+	if (declaration.type === 'FunctionDeclaration') {
+		return declaration;
+	}
+
+	// For inline arrow functions or function expressions, we can't add type annotations
 	return null;
 }
 

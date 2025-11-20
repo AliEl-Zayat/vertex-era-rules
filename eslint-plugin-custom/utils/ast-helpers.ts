@@ -111,37 +111,50 @@ export function getJSXElementName(node: TSESTree.JSXElement): string | null {
  * Optimized to minimize redundant checks and use early returns
  */
 export function traverseNode(node: TSESTree.Node, visitor: (node: TSESTree.Node) => void): void {
-	visitor(node);
+	const visited = new WeakSet<object>();
 
-	// Recursively visit all child nodes
-	// Use Object.keys for better performance than for-in
-	const keys = Object.keys(node);
-	for (let i = 0; i < keys.length; i++) {
-		const key = keys[i];
-		const child = (node as unknown as Record<string, unknown>)[key];
+	function traverse(currentNode: TSESTree.Node): void {
+		// Skip if already visited (prevents infinite recursion on circular references)
+		if (visited.has(currentNode)) return;
+		visited.add(currentNode);
 
-		// Early continue: skip null/undefined
-		if (!child) continue;
+		visitor(currentNode);
 
-		// Early continue: skip non-objects
-		if (typeof child !== 'object') continue;
+		// Recursively visit all child nodes
+		// Use Object.keys for better performance than for-in
+		const keys = Object.keys(currentNode);
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			// Skip parent references to avoid circular traversal
+			if (key === 'parent') continue;
 
-		if (Array.isArray(child)) {
-			// Optimize array traversal
-			for (let j = 0; j < child.length; j++) {
-				const item = child[j];
-				// Early continue: skip invalid items
-				if (!item || typeof item !== 'object') continue;
-				// Early continue: skip non-AST nodes
-				if (!('type' in item)) continue;
+			const child = (currentNode as unknown as Record<string, unknown>)[key];
 
-				traverseNode(item as TSESTree.Node, visitor);
+			// Early continue: skip null/undefined
+			if (!child) continue;
+
+			// Early continue: skip non-objects
+			if (typeof child !== 'object') continue;
+
+			if (Array.isArray(child)) {
+				// Optimize array traversal
+				for (let j = 0; j < child.length; j++) {
+					const item = child[j];
+					// Early continue: skip invalid items
+					if (!item || typeof item !== 'object') continue;
+					// Early continue: skip non-AST nodes
+					if (!('type' in item)) continue;
+
+					traverse(item as TSESTree.Node);
+				}
+			} else if ('type' in child) {
+				// Single node child
+				traverse(child as TSESTree.Node);
 			}
-		} else if ('type' in child) {
-			// Single node child
-			traverseNode(child as TSESTree.Node, visitor);
 		}
 	}
+
+	traverse(node);
 }
 
 /**
@@ -470,6 +483,197 @@ export function matchesServicePath(filename: string): boolean {
 }
 
 /**
+ * React import style enum
+ */
+export enum ReactImportStyle {
+	NAMESPACE = 'NAMESPACE', // import * as React from 'react'
+	DEFAULT_ONLY = 'DEFAULT_ONLY', // import React from 'react'
+	NAMED_ONLY = 'NAMED_ONLY', // import { useState } from 'react'
+	MIXED = 'MIXED', // import React, { useState } from 'react'
+	NONE = 'NONE', // no React import
+}
+
+/**
+ * Import analysis result interface
+ */
+export interface ImportAnalysisResult {
+	style: ReactImportStyle;
+	hasDefaultImport: boolean;
+	hasNamedImports: boolean;
+	hasMemoImport: boolean;
+	importNode: TSESTree.ImportDeclaration | null;
+}
+
+/**
+ * Analyze React import style in a program
+ * Detects namespace, default, named, mixed, or no React import
+ */
+export function analyzeReactImport(programNode: TSESTree.Program): ImportAnalysisResult {
+	try {
+		// Find React import declaration
+		let reactImport: TSESTree.ImportDeclaration | null = null;
+
+		for (const statement of programNode.body) {
+			if (
+				statement.type === AST_NODE_TYPES.ImportDeclaration &&
+				statement.source.value === 'react'
+			) {
+				reactImport = statement;
+				break;
+			}
+		}
+
+		// No React import found
+		if (!reactImport) {
+			return {
+				style: ReactImportStyle.NONE,
+				hasDefaultImport: false,
+				hasNamedImports: false,
+				hasMemoImport: false,
+				importNode: null,
+			};
+		}
+
+		// Analyze import specifiers
+		let hasDefaultImport = false;
+		let hasNamedImports = false;
+		let hasNamespaceImport = false;
+		let hasMemoImport = false;
+
+		for (const specifier of reactImport.specifiers) {
+			if (specifier.type === AST_NODE_TYPES.ImportDefaultSpecifier) {
+				hasDefaultImport = true;
+			} else if (specifier.type === AST_NODE_TYPES.ImportNamespaceSpecifier) {
+				hasNamespaceImport = true;
+			} else if (specifier.type === AST_NODE_TYPES.ImportSpecifier) {
+				hasNamedImports = true;
+				// Check if memo is imported
+				if (
+					specifier.imported.type === AST_NODE_TYPES.Identifier &&
+					specifier.imported.name === 'memo'
+				) {
+					hasMemoImport = true;
+				}
+			}
+		}
+
+		// Determine import style
+		let style: ReactImportStyle;
+		if (hasNamespaceImport) {
+			style = ReactImportStyle.NAMESPACE;
+		} else if (hasDefaultImport && hasNamedImports) {
+			style = ReactImportStyle.MIXED;
+		} else if (hasDefaultImport) {
+			style = ReactImportStyle.DEFAULT_ONLY;
+		} else if (hasNamedImports) {
+			style = ReactImportStyle.NAMED_ONLY;
+		} else {
+			// Edge case: empty import (shouldn't happen but handle gracefully)
+			style = ReactImportStyle.NONE;
+		}
+
+		return {
+			style,
+			hasDefaultImport,
+			hasNamedImports,
+			hasMemoImport,
+			importNode: reactImport,
+		};
+	} catch (error) {
+		// Return safe default on error
+		return {
+			style: ReactImportStyle.NONE,
+			hasDefaultImport: false,
+			hasNamedImports: false,
+			hasMemoImport: false,
+			importNode: null,
+		};
+	}
+}
+
+/**
+ * Icon environment enum
+ */
+export enum IconEnvironment {
+	REACT_WEB = 'REACT_WEB',
+	REACT_NATIVE = 'REACT_NATIVE',
+}
+
+/**
+ * Environment detection result interface
+ */
+export interface EnvironmentDetectionResult {
+	environment: IconEnvironment;
+	hasReactNativeSvgImport: boolean;
+	usesSvgComponent: boolean;
+}
+
+/**
+ * Detect icon environment (React web vs React Native)
+ * Checks for react-native-svg imports and <Svg> JSX elements
+ * Defaults to React web if environment cannot be determined
+ */
+export function detectIconEnvironment(
+	programNode: TSESTree.Program,
+	svgNode?: TSESTree.JSXElement,
+): EnvironmentDetectionResult {
+	try {
+		let hasReactNativeSvgImport = false;
+		let usesSvgComponent = false;
+
+		// Check for react-native-svg import
+		for (const statement of programNode.body) {
+			if (
+				statement.type === AST_NODE_TYPES.ImportDeclaration &&
+				statement.source.value === 'react-native-svg'
+			) {
+				hasReactNativeSvgImport = true;
+				break;
+			}
+		}
+
+		// Check if the provided SVG node uses <Svg> component (React Native)
+		if (svgNode) {
+			const elementName = getJSXElementName(svgNode);
+			if (elementName === 'Svg') {
+				usesSvgComponent = true;
+			}
+		}
+
+		// If no SVG node provided, traverse the entire program to find <Svg> usage
+		if (!svgNode) {
+			traverseNode(programNode, (node) => {
+				if (node.type === AST_NODE_TYPES.JSXElement) {
+					const elementName = getJSXElementName(node);
+					if (elementName === 'Svg') {
+						usesSvgComponent = true;
+					}
+				}
+			});
+		}
+
+		// Determine environment: React Native if either indicator is present
+		const environment =
+			hasReactNativeSvgImport || usesSvgComponent
+				? IconEnvironment.REACT_NATIVE
+				: IconEnvironment.REACT_WEB;
+
+		return {
+			environment,
+			hasReactNativeSvgImport,
+			usesSvgComponent,
+		};
+	} catch (error) {
+		// Default to React web on error
+		return {
+			environment: IconEnvironment.REACT_WEB,
+			hasReactNativeSvgImport: false,
+			usesSvgComponent: false,
+		};
+	}
+}
+
+/**
  * Check if a ternary operator contains nested ternaries
  */
 export function containsNestedTernary(node: TSESTree.ConditionalExpression): boolean {
@@ -560,5 +764,424 @@ export function hasIntentionalIgnoreComment(
 		);
 	} catch {
 		return false;
+	}
+}
+
+/**
+ * Import update strategy enum
+ */
+export enum ImportUpdateStrategy {
+	NO_UPDATE = 'NO_UPDATE', // memo already available
+	ADD_TO_NAMED = 'ADD_TO_NAMED', // add to existing named imports
+	ADD_NAMED_TO_DEFAULT = 'ADD_NAMED_TO_DEFAULT', // add named imports to default-only import
+	CREATE_NEW_IMPORT = 'CREATE_NEW_IMPORT', // create new import statement
+}
+
+/**
+ * Memo strategy interface
+ */
+export interface MemoStrategy {
+	memoReference: string; // 'React.memo' or 'memo'
+	needsMemoImport: boolean;
+	importUpdateStrategy: ImportUpdateStrategy;
+}
+
+/**
+ * Select memo strategy based on React import analysis
+ * Chooses between React.memo and memo based on import style
+ */
+export function selectMemoStrategy(analysis: ImportAnalysisResult): MemoStrategy {
+	try {
+		// If memo is already imported, use it directly
+		if (analysis.hasMemoImport) {
+			return {
+				memoReference: 'memo',
+				needsMemoImport: false,
+				importUpdateStrategy: ImportUpdateStrategy.NO_UPDATE,
+			};
+		}
+
+		// Namespace imports: use React.memo, no import changes needed
+		if (analysis.style === ReactImportStyle.NAMESPACE) {
+			return {
+				memoReference: 'React.memo',
+				needsMemoImport: false,
+				importUpdateStrategy: ImportUpdateStrategy.NO_UPDATE,
+			};
+		}
+
+		// Default-only imports: use React.memo, no import changes needed
+		if (analysis.style === ReactImportStyle.DEFAULT_ONLY) {
+			return {
+				memoReference: 'React.memo',
+				needsMemoImport: false,
+				importUpdateStrategy: ImportUpdateStrategy.NO_UPDATE,
+			};
+		}
+
+		// Named-only imports: add memo to existing named imports
+		if (analysis.style === ReactImportStyle.NAMED_ONLY) {
+			return {
+				memoReference: 'memo',
+				needsMemoImport: true,
+				importUpdateStrategy: ImportUpdateStrategy.ADD_TO_NAMED,
+			};
+		}
+
+		// Mixed imports: add memo to existing named imports
+		if (analysis.style === ReactImportStyle.MIXED) {
+			return {
+				memoReference: 'memo',
+				needsMemoImport: true,
+				importUpdateStrategy: ImportUpdateStrategy.ADD_TO_NAMED,
+			};
+		}
+
+		// No React import: create new import statement
+		return {
+			memoReference: 'memo',
+			needsMemoImport: true,
+			importUpdateStrategy: ImportUpdateStrategy.CREATE_NEW_IMPORT,
+		};
+	} catch (error) {
+		// Safe fallback: use React.memo without import changes
+		return {
+			memoReference: 'React.memo',
+			needsMemoImport: false,
+			importUpdateStrategy: ImportUpdateStrategy.NO_UPDATE,
+		};
+	}
+}
+
+/**
+ * Import update interface
+ */
+export interface ImportUpdate {
+	fixes: { range: [number, number]; text: string }[];
+	updatedImports: string[];
+}
+
+/**
+ * Update imports to add memo if needed
+ * Generates import modification fixes based on the strategy
+ */
+export function updateImports(
+	strategy: MemoStrategy,
+	importNode: TSESTree.ImportDeclaration | null,
+	programNode: TSESTree.Program,
+): ImportUpdate {
+	try {
+		const fixes: { range: [number, number]; text: string }[] = [];
+		const updatedImports: string[] = [];
+
+		// No update needed
+		if (strategy.importUpdateStrategy === ImportUpdateStrategy.NO_UPDATE) {
+			return { fixes, updatedImports };
+		}
+
+		// Add memo to existing named imports
+		if (strategy.importUpdateStrategy === ImportUpdateStrategy.ADD_TO_NAMED) {
+			if (!importNode || !importNode.range) {
+				return { fixes, updatedImports };
+			}
+
+			// Find the named imports section
+			const namedSpecifiers = importNode.specifiers.filter(
+				(spec) => spec.type === AST_NODE_TYPES.ImportSpecifier,
+			);
+
+			if (namedSpecifiers.length === 0) {
+				// This shouldn't happen for ADD_TO_NAMED, but handle gracefully
+				return { fixes, updatedImports };
+			}
+
+			// Get the last named specifier to insert after it
+			const lastNamedSpecifier = namedSpecifiers[namedSpecifiers.length - 1];
+			if (!lastNamedSpecifier.range) {
+				return { fixes, updatedImports };
+			}
+
+			// Insert ", memo" after the last named import
+			const insertPosition = lastNamedSpecifier.range[1];
+			fixes.push({
+				range: [insertPosition, insertPosition],
+				text: ', memo',
+			});
+
+			updatedImports.push('memo');
+		}
+
+		// Add named imports to default-only import
+		if (strategy.importUpdateStrategy === ImportUpdateStrategy.ADD_NAMED_TO_DEFAULT) {
+			if (!importNode || !importNode.range) {
+				return { fixes, updatedImports };
+			}
+
+			// Find the default specifier
+			const defaultSpecifier = importNode.specifiers.find(
+				(spec) => spec.type === AST_NODE_TYPES.ImportDefaultSpecifier,
+			);
+
+			if (!defaultSpecifier || !defaultSpecifier.range) {
+				return { fixes, updatedImports };
+			}
+
+			// Insert ", { memo }" after the default import
+			const insertPosition = defaultSpecifier.range[1];
+			fixes.push({
+				range: [insertPosition, insertPosition],
+				text: ', { memo }',
+			});
+
+			updatedImports.push('memo');
+		}
+
+		// Create new import statement
+		if (strategy.importUpdateStrategy === ImportUpdateStrategy.CREATE_NEW_IMPORT) {
+			// Insert at the beginning of the program
+			const insertPosition = programNode.range ? programNode.range[0] : 0;
+			fixes.push({
+				range: [insertPosition, insertPosition],
+				text: "import { memo } from 'react';\n",
+			});
+
+			updatedImports.push('memo');
+		}
+
+		return { fixes, updatedImports };
+	} catch (error) {
+		// Return empty fixes on error
+		return { fixes: [], updatedImports: [] };
+	}
+}
+
+/**
+ * Type annotation strategy interface
+ */
+export interface TypeAnnotationStrategy {
+	propsType: string; // 'React.SVGProps<SVGSVGElement>' or 'SvgProps'
+	needsTypeImport: boolean;
+	typeImportSource: string | null; // 'react-native-svg' or null
+	needsComponentImport: boolean; // For React Native Svg component
+}
+
+/**
+ * Get type annotation strategy based on environment and import style
+ * Determines the appropriate props type for React web or React Native
+ */
+export function getTypeAnnotationStrategy(
+	environment: IconEnvironment,
+	importStyle: ReactImportStyle,
+): TypeAnnotationStrategy {
+	try {
+		// React Native environment
+		if (environment === IconEnvironment.REACT_NATIVE) {
+			return {
+				propsType: 'SvgProps',
+				needsTypeImport: true,
+				typeImportSource: 'react-native-svg',
+				needsComponentImport: true,
+			};
+		}
+
+		// React web environment
+		// Use React.SVGProps for namespace imports, SVGProps for others
+		if (importStyle === ReactImportStyle.NAMESPACE) {
+			return {
+				propsType: 'React.SVGProps<SVGSVGElement>',
+				needsTypeImport: false,
+				typeImportSource: null,
+				needsComponentImport: false,
+			};
+		}
+
+		// For other import styles, we could use SVGProps directly
+		// but to keep it simple and consistent, use React.SVGProps
+		return {
+			propsType: 'React.SVGProps<SVGSVGElement>',
+			needsTypeImport: false,
+			typeImportSource: null,
+			needsComponentImport: false,
+		};
+	} catch (error) {
+		// Safe fallback: React web with React.SVGProps
+		return {
+			propsType: 'React.SVGProps<SVGSVGElement>',
+			needsTypeImport: false,
+			typeImportSource: null,
+			needsComponentImport: false,
+		};
+	}
+}
+
+/**
+ * Type annotation fix interface
+ */
+export interface TypeAnnotationFix {
+	fixes: { range: [number, number]; text: string }[];
+	success: boolean;
+}
+
+/**
+ * Add type annotation to a component
+ * Handles function declarations, arrow functions, and components with/without props
+ */
+export function addTypeAnnotation(
+	componentNode: TSESTree.Node,
+	strategy: TypeAnnotationStrategy,
+	programNode: TSESTree.Program,
+): TypeAnnotationFix {
+	try {
+		const fixes: { range: [number, number]; text: string }[] = [];
+
+		// Handle function declaration: function Icon(props) { ... }
+		if (componentNode.type === AST_NODE_TYPES.FunctionDeclaration) {
+			const func = componentNode;
+
+			// Check if function already has a typed props parameter
+			if (func.params.length > 0) {
+				const firstParam = func.params[0];
+
+				// If parameter already has a type annotation, skip
+				if (
+					firstParam.type === AST_NODE_TYPES.Identifier &&
+					firstParam.typeAnnotation
+				) {
+					return { fixes: [], success: false };
+				}
+
+				// Add type annotation to existing parameter
+				if (firstParam.type === AST_NODE_TYPES.Identifier && firstParam.range) {
+					const insertPosition = firstParam.range[1];
+					fixes.push({
+						range: [insertPosition, insertPosition],
+						text: `: ${strategy.propsType}`,
+					});
+				}
+			} else {
+				// No props parameter, add one with type
+				// The function has empty params (), we need to add props inside them
+				// Find the opening parenthesis position (right after function name)
+				if (func.id && func.id.range && func.body.range) {
+					// The opening paren is right after the function name
+					const openParenPosition = func.id.range[1];
+					// Insert "props: Type" right after the opening paren
+					// We need to replace the () with (props: Type)
+					// Find the closing paren by looking at the body start
+					const bodyStart = func.body.range[0];
+					// The closing paren should be just before the body
+					// We'll insert after the opening paren
+					fixes.push({
+						range: [openParenPosition + 1, openParenPosition + 1],
+						text: `props: ${strategy.propsType}`,
+					});
+				}
+			}
+		}
+
+		// Handle arrow function: const Icon = (props) => { ... }
+		if (componentNode.type === AST_NODE_TYPES.VariableDeclarator) {
+			const init = componentNode.init;
+
+			if (init && init.type === AST_NODE_TYPES.ArrowFunctionExpression) {
+				const arrowFunc = init;
+
+				// Check if arrow function already has a typed props parameter
+				if (arrowFunc.params.length > 0) {
+					const firstParam = arrowFunc.params[0];
+
+					// If parameter already has a type annotation, skip
+					if (
+						firstParam.type === AST_NODE_TYPES.Identifier &&
+						firstParam.typeAnnotation
+					) {
+						return { fixes: [], success: false };
+					}
+
+					// Add type annotation to existing parameter
+					if (firstParam.type === AST_NODE_TYPES.Identifier && firstParam.range) {
+						const insertPosition = firstParam.range[1];
+						fixes.push({
+							range: [insertPosition, insertPosition],
+							text: `: ${strategy.propsType}`,
+						});
+					}
+				}
+				// Note: We don't add props parameter if it doesn't exist
+				// This would require more complex AST manipulation
+			}
+		}
+
+		// Add React Native imports if needed
+		if (strategy.needsTypeImport && strategy.typeImportSource) {
+			// Check if react-native-svg import already exists
+			let reactNativeSvgImport: TSESTree.ImportDeclaration | null = null;
+
+			for (const statement of programNode.body) {
+				if (
+					statement.type === AST_NODE_TYPES.ImportDeclaration &&
+					statement.source.value === strategy.typeImportSource
+				) {
+					reactNativeSvgImport = statement;
+					break;
+				}
+			}
+
+			if (reactNativeSvgImport) {
+				// Check if SvgProps and Svg are already imported
+				const importedNames = reactNativeSvgImport.specifiers
+					.filter((spec) => spec.type === AST_NODE_TYPES.ImportSpecifier)
+					.map((spec) => {
+						if (spec.type === AST_NODE_TYPES.ImportSpecifier) {
+							return spec.imported.type === AST_NODE_TYPES.Identifier
+								? spec.imported.name
+								: null;
+						}
+						return null;
+					})
+					.filter((name): name is string => name !== null);
+
+				const needsSvgProps = !importedNames.includes('SvgProps');
+				const needsSvg = strategy.needsComponentImport && !importedNames.includes('Svg');
+
+				if (needsSvgProps || needsSvg) {
+					// Add to existing import
+					const namedSpecifiers = reactNativeSvgImport.specifiers.filter(
+						(spec) => spec.type === AST_NODE_TYPES.ImportSpecifier,
+					);
+
+					if (namedSpecifiers.length > 0) {
+						const lastSpecifier = namedSpecifiers[namedSpecifiers.length - 1];
+						if (lastSpecifier.range) {
+							const toAdd: string[] = [];
+							if (needsSvgProps) toAdd.push('SvgProps');
+							if (needsSvg) toAdd.push('Svg');
+
+							fixes.push({
+								range: [lastSpecifier.range[1], lastSpecifier.range[1]],
+								text: `, ${toAdd.join(', ')}`,
+							});
+						}
+					}
+				}
+			} else {
+				// Create new react-native-svg import
+				const toImport: string[] = ['SvgProps'];
+				if (strategy.needsComponentImport) {
+					toImport.push('Svg');
+				}
+
+				const insertPosition = programNode.range ? programNode.range[0] : 0;
+				fixes.push({
+					range: [insertPosition, insertPosition],
+					text: `import { ${toImport.join(', ')} } from '${strategy.typeImportSource}';\n`,
+				});
+			}
+		}
+
+		return { fixes, success: fixes.length > 0 };
+	} catch (error) {
+		// Return empty fixes on error
+		return { fixes: [], success: false };
 	}
 }
