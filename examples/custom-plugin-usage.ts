@@ -8,7 +8,7 @@
 // eslint.config.ts
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
 	// ESLint recommended rules

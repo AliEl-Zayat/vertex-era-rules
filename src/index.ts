@@ -1,5 +1,5 @@
 /**
- * @zayat/eslint-custom-rules
+ * zayat-eslint-rules
  * 
  * Custom ESLint rules and configurations for React/TypeScript projects
  * 

@@ -6,7 +6,7 @@
  */
 
 // eslint.config.ts
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
 	// Use the strict configuration (all custom rules enabled)

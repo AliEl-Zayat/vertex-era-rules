@@ -6,7 +6,7 @@
  * 
  * Usage:
  * ```typescript
- * import { defaultIgnores, ignoreConfig } from '@zayat/eslint-custom-rules/ignores';
+ * import { defaultIgnores, ignoreConfig } from 'zayat-eslint-rules/ignores';
  * 
  * export default [
  *   ignoreConfig,

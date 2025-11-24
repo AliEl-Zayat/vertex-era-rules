@@ -35,7 +35,7 @@ const plugin: {
 	configs: Record<string, { rules: Record<string, string> }>;
 } = {
 	meta: {
-		name: '@zayat/eslint-custom-rules',
+		name: 'zayat-eslint-rules',
 		version: '1.0.0',
 	},
 	rules,

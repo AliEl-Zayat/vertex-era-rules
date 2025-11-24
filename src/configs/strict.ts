@@ -2,7 +2,7 @@ import customPlugin from '../plugin/index.js';
 import { recommendedConfig } from './recommended.js';
 
 /**
- * Strict configuration preset for @zayat/eslint-custom-rules
+ * Strict configuration preset for zayat-eslint-rules
  *
  * Extends the recommended configuration and enables ALL custom rules.
  * This preset is for projects requiring maximum code quality and consistency.

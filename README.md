@@ -1,4 +1,4 @@
-# @zayat/eslint-custom-rules
+# zayat-eslint-rules
 
 Custom ESLint rules and configurations for React/TypeScript projects.
 
@@ -14,7 +14,7 @@ Custom ESLint rules and configurations for React/TypeScript projects.
 ## Installation
 
 ```bash
-npm install @zayat/eslint-custom-rules --save-dev
+npm install zayat-eslint-rules --save-dev
 ```
 
 Or via GitHub:
@@ -28,7 +28,7 @@ npm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git
 Create or update your `eslint.config.ts`:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.recommended,
@@ -43,7 +43,7 @@ export default [
 Core configuration without custom rules:
 
 ```typescript
-import { baseConfig } from '@zayat/eslint-custom-rules';
+import { baseConfig } from 'zayat-eslint-rules';
 
 export default [...baseConfig];
 ```
@@ -53,7 +53,7 @@ export default [...baseConfig];
 Base config + commonly used custom rules:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [...eslintRules.configs.recommended];
 ```
@@ -63,7 +63,7 @@ export default [...eslintRules.configs.recommended];
 All custom rules enabled:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [...eslintRules.configs.strict];
 ```
@@ -73,7 +73,7 @@ export default [...eslintRules.configs.strict];
 For projects with TypeScript type checking:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.recommended,
@@ -163,7 +163,7 @@ This package includes `eslint-config-prettier` to automatically disable ESLint r
 Get recommended VS Code settings:
 
 ```typescript
-import { getVSCodeSettingsJSON } from '@zayat/eslint-custom-rules';
+import { getVSCodeSettingsJSON } from 'zayat-eslint-rules';
 
 console.log(getVSCodeSettingsJSON());
 ```
@@ -212,7 +212,7 @@ import { useAppSelector, useAppDispatch } from '@store/hooks';
 ### Prettier Detection
 
 ```typescript
-import { detectPrettierConfig, getPrettierConfigForESLint } from '@zayat/eslint-custom-rules';
+import { detectPrettierConfig, getPrettierConfigForESLint } from 'zayat-eslint-rules';
 
 // Check if Prettier config exists
 const result = detectPrettierConfig();
@@ -229,7 +229,7 @@ import {
   getRecommendedVSCodeSettings,
   getVSCodeSettingsJSON,
   getVSCodeExtensionsRecommendations,
-} from '@zayat/eslint-custom-rules';
+} from 'zayat-eslint-rules';
 
 // Get settings object
 const settings = getRecommendedVSCodeSettings();

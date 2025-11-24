@@ -8,7 +8,7 @@ import type { Linter } from 'eslint';
  *
  * Usage:
  * ```javascript
- * import eslintRules from '@zayat/eslint-custom-rules';
+ * import eslintRules from 'zayat-eslint-rules';
  *
  * export default [
  *   ...eslintRules.configs.recommended,

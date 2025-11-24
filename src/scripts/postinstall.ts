@@ -12,7 +12,7 @@
 import { createDefaultPrettierConfig, detectPrettierConfig } from '../utils/prettier-detector.js';
 
 function main(): void {
-	console.log('\n🎨 @zayat/eslint-custom-rules - Post-install Setup\n');
+	console.log('\n🎨 zayat-eslint-rules - Post-install Setup\n');
 	console.log('━'.repeat(50));
 
 	// Check for existing Prettier config
@@ -43,7 +43,7 @@ function main(): void {
 	console.log('\n📝 Quick Setup Guide:\n');
 	console.log('1. Create or update your eslint.config.ts:');
 	console.log('');
-	console.log(`   import eslintRules from '@zayat/eslint-custom-rules';`);
+	console.log(`   import eslintRules from 'zayat-eslint-rules';`);
 	console.log('');
 	console.log('   export default [');
 	console.log('     ...eslintRules.configs.recommended,');

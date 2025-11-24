@@ -13,7 +13,7 @@ import { reduxConfig } from './redux.js';
 import { getPrettierConfigForESLint } from '../utils/prettier-detector.js';
 
 /**
- * Base configuration preset for @zayat/eslint-custom-rules
+ * Base configuration preset for zayat-eslint-rules
  *
  * Includes:
  * - Core ESLint recommended rules

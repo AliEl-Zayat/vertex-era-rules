@@ -2,7 +2,7 @@ import customPlugin from '../plugin/index.js';
 import { baseConfig } from './base.js';
 
 /**
- * Recommended configuration preset for @zayat/eslint-custom-rules
+ * Recommended configuration preset for zayat-eslint-rules
  *
  * Extends the base configuration and enables commonly used custom rules.
  * This preset is suitable for most React/TypeScript projects.

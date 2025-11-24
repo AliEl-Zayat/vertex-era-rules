@@ -3,7 +3,7 @@
  * 
  * Usage:
  * ```typescript
- * import strictConfig from '@zayat/eslint-custom-rules/configs/strict';
+ * import strictConfig from 'zayat-eslint-rules/configs/strict';
  * ```
  */
 

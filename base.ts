@@ -5,7 +5,7 @@
  * 
  * Usage:
  * ```typescript
- * import baseConfig from '@zayat/eslint-custom-rules/base';
+ * import baseConfig from 'zayat-eslint-rules/base';
  * 
  * export default [
  *   ...baseConfig,

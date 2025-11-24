@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of `@zayat/eslint-custom-rules`
+- Initial release of `zayat-eslint-rules`
 
 #### Custom Rules (12 total)
 

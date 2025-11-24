@@ -1,5 +1,5 @@
 {
-  "name": "@zayat/eslint-custom-rules",
+  "name": "zayat-eslint-rules",
   "version": "1.0.0",
   "description": "Custom ESLint rules and configurations for React/TypeScript projects",
   "type": "module",

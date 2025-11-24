@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Solutions to common issues when using `@zayat/eslint-custom-rules`.
+Solutions to common issues when using `zayat-eslint-rules`.
 
 ## Table of Contents
 
@@ -24,10 +24,10 @@ Solutions to common issues when using `@zayat/eslint-custom-rules`.
 
 ```bash
 # Verify installation
-npm list @zayat/eslint-custom-rules
+npm list zayat-eslint-rules
 
 # Reinstall if missing
-npm install @zayat/eslint-custom-rules --save-dev
+npm install zayat-eslint-rules --save-dev
 ```
 
 ### Module resolution errors with Git installation
@@ -71,7 +71,7 @@ npm install --save-dev eslint@^9.0.0 typescript@^5.0.0
 **Solution:** Verify the plugin is properly configured:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 // Check plugin is loaded
 console.log(eslintRules.plugin.rules);
@@ -164,7 +164,7 @@ Rename your icon files to match these patterns or add custom file patterns:
 1. Ensure `eslint-config-prettier` is at the end of your config:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.recommended,

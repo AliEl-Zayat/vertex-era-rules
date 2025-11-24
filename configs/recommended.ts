@@ -3,7 +3,7 @@
  * 
  * Usage:
  * ```typescript
- * import recommendedConfig from '@zayat/eslint-custom-rules/configs/recommended';
+ * import recommendedConfig from 'zayat-eslint-rules/configs/recommended';
  * ```
  */
 

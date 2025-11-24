@@ -1,6 +1,6 @@
 # Installation Test Guide
 
-This guide helps you verify that `@zayat/eslint-custom-rules` is correctly installed and configured.
+This guide helps you verify that `zayat-eslint-rules` is correctly installed and configured.
 
 ## Quick Verification
 
@@ -8,10 +8,10 @@ This guide helps you verify that `@zayat/eslint-custom-rules` is correctly insta
 
 ```bash
 # Verify package is installed
-npm list @zayat/eslint-custom-rules
+npm list zayat-eslint-rules
 
 # Expected output (version may differ):
-# └── @zayat/eslint-custom-rules@1.0.0
+# └── zayat-eslint-rules@1.0.0
 ```
 
 ### Step 2: Verify Import
@@ -19,7 +19,7 @@ npm list @zayat/eslint-custom-rules
 Create a test file `test-eslint.js`:
 
 ```javascript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 console.log('✅ Package imported successfully');
 console.log('📦 Plugin name:', eslintRules.plugin.meta.name);
@@ -38,7 +38,7 @@ node --experimental-vm-modules test-eslint.js
 Create a minimal `eslint.config.js`:
 
 ```javascript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [...eslintRules.configs.recommended];
 ```
@@ -56,7 +56,7 @@ You should see configuration output with `custom/` rules included.
 ### Verify All Rules Are Available
 
 ```javascript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 const expectedRules = [
   'one-component-per-file',
@@ -94,7 +94,7 @@ if (extra.length > 0) {
 ### Verify Configs Are Available
 
 ```javascript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 const expectedConfigs = ['base', 'recommended', 'strict', 'typeAware'];
 
@@ -119,7 +119,7 @@ import {
   getPrettierConfigForESLint,
   getRecommendedVSCodeSettings,
   getVSCodeSettingsJSON,
-} from '@zayat/eslint-custom-rules';
+} from 'zayat-eslint-rules';
 
 console.log('✅ Prettier detection:', typeof detectPrettierConfig === 'function');
 console.log('✅ Prettier config getter:', typeof getPrettierConfigForESLint === 'function');

@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get up and running with `@zayat/eslint-custom-rules` in minutes.
+Get up and running with `zayat-eslint-rules` in minutes.
 
 ## Prerequisites
 
@@ -12,13 +12,13 @@ Get up and running with `@zayat/eslint-custom-rules` in minutes.
 
 ```bash
 # Using npm
-npm install @zayat/eslint-custom-rules --save-dev
+npm install zayat-eslint-rules --save-dev
 
 # Using yarn
-yarn add -D @zayat/eslint-custom-rules
+yarn add -D zayat-eslint-rules
 
 # Using pnpm
-pnpm add -D @zayat/eslint-custom-rules
+pnpm add -D zayat-eslint-rules
 
 # Or install via Git
 npm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git
@@ -31,7 +31,7 @@ npm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git
 Create `eslint.config.ts` (or `eslint.config.js`) in your project root:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.recommended,
@@ -64,7 +64,7 @@ npx eslint . --fix
 Best for most projects. Includes common custom rules:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.recommended,
@@ -84,7 +84,7 @@ export default [
 For maximum code quality. Enables ALL custom rules:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.strict,
@@ -103,7 +103,7 @@ export default [
 For projects that want TypeScript type-checking rules:
 
 ```typescript
-import eslintRules from '@zayat/eslint-custom-rules';
+import eslintRules from 'zayat-eslint-rules';
 
 export default [
   ...eslintRules.configs.recommended,

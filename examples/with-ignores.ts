@@ -6,8 +6,8 @@
  */
 
 // eslint.config.ts
-import eslintRules from '@zayat/eslint-custom-rules';
-import { ignoreConfig, createIgnoreConfig } from '@zayat/eslint-custom-rules/ignores';
+import eslintRules from 'zayat-eslint-rules';
+import { ignoreConfig, createIgnoreConfig } from 'zayat-eslint-rules/ignores';
 
 export default [
 	// Option 1: Use default ignores

@@ -6,7 +6,7 @@
  * 
  * Usage:
  * ```typescript
- * import { iconFileConfig, serviceFileConfig, formFileConfig } from '@zayat/eslint-custom-rules/file-specific';
+ * import { iconFileConfig, serviceFileConfig, formFileConfig } from 'zayat-eslint-rules/file-specific';
  * 
  * export default [
  *   ...baseConfig,
