@@ -36,7 +36,7 @@ import { ESLintUtils } from "@typescript-eslint/utils";
  */
 export const createRule = ESLintUtils.RuleCreator(
   (name) =>
-    `https://github.com/AliEl-Zayat/vertex-era-rules/blob/main/docs/rules/${name}.md`
+    `https://github.com/AliEl-Zayat/eslint-rules-zayat/blob/main/docs/rules/${name}.md`
 );
 
 export default createRule;

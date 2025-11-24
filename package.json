@@ -1,6 +1,6 @@
 {
   "name": "zayat-eslint-rules",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Custom ESLint rules and configurations for React/TypeScript projects",
   "type": "module",
   "main": "./dist/index.js",
@@ -82,12 +82,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AliEl-Zayat/vertex-era-rules.git"
+    "url": "git+https://github.com/AliEl-Zayat/eslint-rules-zayat.git"
   },
   "bugs": {
-    "url": "https://github.com/AliEl-Zayat/vertex-era-rules/issues"
+    "url": "https://github.com/AliEl-Zayat/eslint-rules-zayat/issues"
   },
-  "homepage": "https://github.com/AliEl-Zayat/vertex-era-rules#readme",
+  "homepage": "https://github.com/AliEl-Zayat/eslint-rules-zayat#readme",
   "peerDependencies": {
     "eslint": ">=9.0.0",
     "typescript": ">=5.0.0"

@@ -70,7 +70,7 @@ function main(): void {
   console.log("");
   console.log("━".repeat(50));
   console.log(
-    "\n📖 Documentation: https://github.com/AliEl-Zayat/vertex-era-rules"
+    "\n📖 Documentation: https://github.com/AliEl-Zayat/eslint-rules-zayat"
   );
   console.log("\n");
 }

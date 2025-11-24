@@ -2,7 +2,7 @@
 
 Custom ESLint rules and configurations for React/TypeScript projects.
 
-> **Note**: This library is _vibe coded_ - built with passion and continuously evolving! I'm actively listening to the community for enhancement requests and improvements. Feel free to [open an issue](https://github.com/AliEl-Zayat/vertex-era-rules/issues) or submit a PR. Your feedback shapes this library!
+> **Note**: This library is _vibe coded_ - built with passion and continuously evolving! I'm actively listening to the community for enhancement requests and improvements. Feel free to [open an issue](https://github.com/AliEl-Zayat/eslint-rules-zayat/issues) or submit a PR. Your feedback shapes this library!
 
 ## Features
 
@@ -22,7 +22,7 @@ npm install zayat-eslint-rules --save-dev
 Or via GitHub:
 
 ```bash
-npm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git
+npm install git+https://github.com/AliEl-Zayat/eslint-rules-zayat.git
 ```
 
 ## Quick Start
@@ -250,7 +250,7 @@ const extensions = getVSCodeExtensionsRecommendations();
 
 This library is community-driven and I welcome all contributions! Here's how you can help:
 
-- **Report bugs**: Found something broken? [Open an issue](https://github.com/AliEl-Zayat/vertex-era-rules/issues/new)
+- **Report bugs**: Found something broken? [Open an issue](https://github.com/AliEl-Zayat/eslint-rules-zayat/issues/new)
 - **Request features**: Have an idea for a new rule or improvement? I'd love to hear it!
 - **Submit PRs**: Code contributions are always appreciated
 - **Share feedback**: Even small suggestions help make this library better
@@ -259,7 +259,7 @@ This library is community-driven and I welcome all contributions! Here's how you
 
 ```bash
 # Clone the repo
-git clone https://github.com/AliEl-Zayat/vertex-era-rules.git
+git clone https://github.com/AliEl-Zayat/eslint-rules-zayat.git
 
 # Install dependencies
 npm install
@@ -280,5 +280,5 @@ MIT © Zayat
 
 ## Links
 
-- [GitHub Repository](https://github.com/AliEl-Zayat/vertex-era-rules)
-- [Issue Tracker](https://github.com/AliEl-Zayat/vertex-era-rules/issues)
+- [GitHub Repository](https://github.com/AliEl-Zayat/eslint-rules-zayat)
+- [Issue Tracker](https://github.com/AliEl-Zayat/eslint-rules-zayat/issues)

@@ -38,7 +38,7 @@ npm install zayat-eslint-rules --save-dev
 
 ```bash
 # Install from the publish branch
-npm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git#publish
+npm install git+https://github.com/AliEl-Zayat/eslint-rules-zayat.git#publish
 ```
 
 ### Peer dependency warnings
@@ -348,7 +348,7 @@ npx eslint . --max-warnings 0 --parallel
 
 If your issue isn't covered here:
 
-1. **Check existing issues:** [GitHub Issues](https://github.com/AliEl-Zayat/vertex-era-rules/issues)
+1. **Check existing issues:** [GitHub Issues](https://github.com/AliEl-Zayat/eslint-rules-zayat/issues)
 
 2. **Create a new issue** with:
    - ESLint version (`npx eslint --version`)

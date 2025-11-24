@@ -21,7 +21,7 @@ yarn add -D zayat-eslint-rules
 pnpm add -D zayat-eslint-rules
 
 # Or install via Git
-npm install git+https://github.com/AliEl-Zayat/vertex-era-rules.git
+npm install git+https://github.com/AliEl-Zayat/eslint-rules-zayat.git
 ```
 
 ## Basic Setup
@@ -208,6 +208,6 @@ export default [
 
 ## Need Help?
 
-- [GitHub Issues](https://github.com/AliEl-Zayat/vertex-era-rules/issues)
-- [Documentation](https://github.com/AliEl-Zayat/vertex-era-rules)
+- [GitHub Issues](https://github.com/AliEl-Zayat/eslint-rules-zayat/issues)
+- [Documentation](https://github.com/AliEl-Zayat/eslint-rules-zayat)
 
