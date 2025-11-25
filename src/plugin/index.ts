@@ -86,7 +86,7 @@ interface IZayatEslintPlugin {
 const plugin: IZayatEslintPlugin = {
   meta: {
     name: "zayat-eslint-rules",
-    version: "1.0.0",
+    version: "1.1.0",
   },
   rules,
   configs: {
