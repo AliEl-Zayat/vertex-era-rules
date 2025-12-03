@@ -145,3 +145,8 @@ export const oneComponentPerFile = createRule({
 export default {
   "one-component-per-file": oneComponentPerFile,
 };
+
+
+
+
+

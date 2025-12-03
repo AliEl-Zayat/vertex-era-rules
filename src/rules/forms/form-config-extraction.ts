@@ -23,7 +23,7 @@ export const formConfigExtraction = createRule({
       invalidNaming:
         'Form configuration constant "{{name}}" must use UPPER_SNAKE_CASE naming convention (e.g., {{suggestion}}).',
       invalidImportSource:
-        'Form configuration must be imported from a file matching the pattern "*-constants.ts" or "*-constants.tsx". Found: "{{source}}". Consider renaming to "{{suggestion}}".',
+        'Form configuration must be imported from a file matching the pattern "*-constants" or "*-constants.ts" or "*-constants.tsx". Found: "{{source}}". Consider renaming to "{{suggestion}}".',
     },
   },
   defaultOptions: [],
@@ -31,7 +31,7 @@ export const formConfigExtraction = createRule({
     const imports = new Map<string, IImportInfo>();
 
     const UPPER_SNAKE_CASE_PATTERN = /^[A-Z][A-Z0-9_]*$/;
-    const CONSTANTS_FILE_PATTERN = /-constants\.(ts|tsx)$/;
+    const CONSTANTS_FILE_PATTERN = /-constants(?:\.(ts|tsx))?$/;
 
     return {
       ImportDeclaration(node: TSESTree.ImportDeclaration) {
@@ -136,7 +136,7 @@ export const formConfigExtraction = createRule({
                 const pathParts = importInfo.sourcePath.split("/");
                 const fileName = pathParts[pathParts.length - 1];
                 const baseName = fileName.replace(/\.(ts|tsx|js|jsx)$/, "");
-                const suggestion = `${baseName}-constants.ts`;
+                const suggestion = `${baseName}-constants`;
 
                 context.report({
                   node: firstArg,
@@ -183,7 +183,7 @@ export const formConfigExtraction = createRule({
                   const pathParts = importInfo.sourcePath.split("/");
                   const fileName = pathParts[pathParts.length - 1];
                   const baseName = fileName.replace(/\.(ts|tsx|js|jsx)$/, "");
-                  const suggestion = `${baseName}-constants.ts`;
+                  const suggestion = `${baseName}-constants`;
 
                   context.report({
                     node: firstArg,

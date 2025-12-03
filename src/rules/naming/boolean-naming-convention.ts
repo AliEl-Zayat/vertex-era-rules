@@ -284,3 +284,8 @@ export const booleanNamingConvention = createRule<
 export default {
   "boolean-naming-convention": booleanNamingConvention,
 };
+
+
+
+
+

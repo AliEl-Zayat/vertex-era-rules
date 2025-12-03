@@ -98,3 +98,8 @@ export default {
   "no-inline-objects": noInlineObjects,
   "no-inline-functions": noInlineFunctions,
 };
+
+
+
+
+

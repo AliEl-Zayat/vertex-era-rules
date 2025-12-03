@@ -105,3 +105,8 @@ export const noResponseDataReturn = createRule({
 export default {
   "no-response-data-return": noResponseDataReturn,
 };
+
+
+
+
+
