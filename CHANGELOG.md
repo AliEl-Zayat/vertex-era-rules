@@ -5,35 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### [1.2.2](https://github.com/AliEl-Zayat/vertex-era-rules/compare/v1.2.1...v1.2.2) (2025-12-03)
-
 ### [1.2.1](https://github.com/AliEl-Zayat/vertex-era-rules/compare/v1.1.0...v1.2.1) (2025-12-03)
 
+- Fixes the form-config import rule errors requiring the user to add ts or tsx to the import source path.
 
 ### Features
 
-* add file-specific configs for main.tsx and shadcn ui ([5e83772](https://github.com/AliEl-Zayat/vertex-era-rules/commit/5e83772f93588d612da426e349e9741d841a8820))
+- add file-specific configs for main.tsx and shadcn ui ([5e83772](https://github.com/AliEl-Zayat/vertex-era-rules/commit/5e83772f93588d612da426e349e9741d841a8820))
 
 ## 1.2.0 (2025-11-25)
 
 ### Added
 
-* Add `mainTsxConfig` file-specific configuration to disable `@typescript-eslint/no-non-null-assertion` for `main.tsx` entry files
-* Add `shadcnUiConfig` file-specific configuration with relaxed rules for shadcn UI components (`**/ui/*.{ts,tsx}`)
-* Add example file `examples/shadcn-ui-config.ts` demonstrating usage of file-specific configurations
+- Add `mainTsxConfig` file-specific configuration to disable `@typescript-eslint/no-non-null-assertion` for `main.tsx` entry files
+- Add `shadcnUiConfig` file-specific configuration with relaxed rules for shadcn UI components (`**/ui/*.{ts,tsx}`)
+- Add example file `examples/shadcn-ui-config.ts` demonstrating usage of file-specific configurations
 
 ## 1.1.0 (2025-11-25)
 
-
 ### Features
 
-* improve type safety with eslintutils.rulecreator ([2d77111](https://github.com/AliEl-Zayat/vertex-era-rules/commit/2d771114e27f69a78e206f4b25b1a23937e674c8))
-* sync library with vertex-era-rules - add configs, examples, and docs ([605fdb7](https://github.com/AliEl-Zayat/vertex-era-rules/commit/605fdb7617f442faae014ce6f13190f55503375c))
-
+- improve type safety with eslintutils.rulecreator ([2d77111](https://github.com/AliEl-Zayat/vertex-era-rules/commit/2d771114e27f69a78e206f4b25b1a23937e674c8))
+- sync library with vertex-era-rules - add configs, examples, and docs ([605fdb7](https://github.com/AliEl-Zayat/vertex-era-rules/commit/605fdb7617f442faae014ce6f13190f55503375c))
 
 ### Bug Fixes
 
-* update github repository urls to eslint-rules-zayat ([c74b131](https://github.com/AliEl-Zayat/vertex-era-rules/commit/c74b131fac6c741d0ce5e22127b113347e1344ee))
+- update github repository urls to eslint-rules-zayat ([c74b131](https://github.com/AliEl-Zayat/vertex-era-rules/commit/c74b131fac6c741d0ce5e22127b113347e1344ee))
 
 ## [1.0.0] - 2024-01-01
 
@@ -115,6 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 When contributing, please update this changelog with your changes under the `[Unreleased]` section.
 
 Categories to use:
+
 - `Added` - New features
 - `Changed` - Changes in existing functionality
 - `Deprecated` - Soon-to-be removed features
