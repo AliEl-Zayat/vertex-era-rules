@@ -40,6 +40,20 @@ function getEslintRecommendedConfig(): Linter.Config[] {
 }
 
 /**
+ * Extract rules from config arrays, excluding plugin definitions
+ * This prevents "Cannot redefine plugin" errors when merging configs
+ */
+function extractRulesFromConfigs(configs: Linter.Config[]): Record<string, Linter.RuleEntry> {
+	const rules: Record<string, Linter.RuleEntry> = {};
+	for (const config of configs) {
+		if (config.rules) {
+			Object.assign(rules, config.rules);
+		}
+	}
+	return rules;
+}
+
+/**
  * Base configuration preset for zayat-eslint-rules
  *
  * Includes:
@@ -60,8 +74,13 @@ export const baseConfig: Linter.Config[] = [
 	// ESLint and TypeScript base configs
 	...getEslintRecommendedConfig(),
 	...tseslint.configs.recommended,
-	...tseslint.configs.stylistic,
-	...tseslint.configs.strict,
+	// Extract only rules from stylistic and strict configs (without plugin definitions)
+	{
+		rules: {
+			...extractRulesFromConfigs(tseslint.configs.stylistic),
+			...extractRulesFromConfigs(tseslint.configs.strict),
+		},
+	},
 	// TypeScript configuration
 	{
 		files: ['**/*.{ts,tsx}'],
