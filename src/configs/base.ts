@@ -54,6 +54,16 @@ function extractRulesFromConfigs(configs: Linter.Config[]): Record<string, Linte
 }
 
 /**
+ * Extract config properties excluding plugins to prevent redefinition errors
+ */
+function extractConfigWithoutPlugins(configs: Linter.Config[]): Partial<Linter.Config>[] {
+	return configs.map((config) => {
+		const { plugins: _plugins, ...rest } = config;
+		return rest;
+	});
+}
+
+/**
  * Base configuration preset for zayat-eslint-rules
  *
  * Includes:
@@ -73,7 +83,9 @@ function extractRulesFromConfigs(configs: Linter.Config[]): Record<string, Linte
 export const baseConfig: Linter.Config[] = [
 	// ESLint and TypeScript base configs
 	...getEslintRecommendedConfig(),
-	...tseslint.configs.recommended,
+	// Extract rules and parser settings from typescript-eslint configs (without plugin definitions)
+	// This prevents "Cannot redefine plugin" errors when users also include tseslint.configs.recommended
+	...extractConfigWithoutPlugins(tseslint.configs.recommended),
 	// Extract only rules from stylistic and strict configs (without plugin definitions)
 	{
 		rules: {
