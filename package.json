@@ -1,119 +1,119 @@
 {
-  "name": "zayat-eslint-rules",
-  "version": "1.2.2",
-  "description": "Custom ESLint rules and configurations for React/TypeScript projects",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./configs": {
-      "import": "./configs/index.ts",
-      "types": "./configs/index.ts"
-    },
-    "./configs/*": {
-      "import": "./dist/configs/*.js",
-      "types": "./dist/configs/*.d.ts"
-    },
-    "./plugin": {
-      "import": "./dist/plugin/index.js",
-      "types": "./dist/plugin/index.d.ts"
-    },
-    "./base": {
-      "import": "./base.ts",
-      "types": "./base.ts"
-    },
-    "./file-specific": {
-      "import": "./file-specific.ts",
-      "types": "./file-specific.ts"
-    },
-    "./ignores": {
-      "import": "./ignores.ts",
-      "types": "./ignores.ts"
-    }
-  },
-  "files": [
-    "dist",
-    "configs",
-    "examples",
-    "base.ts",
-    "file-specific.ts",
-    "ignores.ts",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "QUICK_START.md",
-    "TROUBLESHOOTING.md",
-    "INSTALLATION_TEST.md",
-    "VERIFY_RULES.md"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build",
-    "postinstall": "node ./dist/scripts/postinstall.js || true",
-    "lint": "eslint src",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "prepare": "husky",
-    "release": "standard-version",
-    "release:patch": "standard-version --release-as patch",
-    "release:minor": "standard-version --release-as minor",
-    "release:major": "standard-version --release-as major",
-    "release:first": "standard-version --first-release"
-  },
-  "keywords": [
-    "eslint",
-    "eslint-plugin",
-    "eslint-config",
-    "react",
-    "typescript",
-    "custom-rules",
-    "react-hooks",
-    "best-practices",
-    "code-quality"
-  ],
-  "author": "Zayat",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AliEl-Zayat/eslint-rules-zayat.git"
-  },
-  "bugs": {
-    "url": "https://github.com/AliEl-Zayat/eslint-rules-zayat/issues"
-  },
-  "homepage": "https://github.com/AliEl-Zayat/eslint-rules-zayat#readme",
-  "peerDependencies": {
-    "eslint": ">=9.0.0",
-    "typescript": ">=5.0.0"
-  },
-  "dependencies": {
-    "@eslint/js": "^9.0.0",
-    "@typescript-eslint/utils": "^8.0.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-simple-import-sort": "^12.0.0",
-    "eslint-plugin-unused-imports": "^4.0.0",
-    "globals": "^16.0.0",
-    "typescript-eslint": "^8.0.0"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@types/node": "^22.0.0",
-    "@typescript-eslint/rule-tester": "^8.48.0",
-    "husky": "^9.1.7",
-    "standard-version": "^9.5.0",
-    "typescript": "^5.6.0",
-    "vitest": "^4.0.13"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+	"name": "zayat-eslint-rules",
+	"version": "1.2.3",
+	"description": "Custom ESLint rules and configurations for React/TypeScript projects",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./configs": {
+			"import": "./configs/index.ts",
+			"types": "./configs/index.ts"
+		},
+		"./configs/*": {
+			"import": "./dist/configs/*.js",
+			"types": "./dist/configs/*.d.ts"
+		},
+		"./plugin": {
+			"import": "./dist/plugin/index.js",
+			"types": "./dist/plugin/index.d.ts"
+		},
+		"./base": {
+			"import": "./base.ts",
+			"types": "./base.ts"
+		},
+		"./file-specific": {
+			"import": "./file-specific.ts",
+			"types": "./file-specific.ts"
+		},
+		"./ignores": {
+			"import": "./ignores.ts",
+			"types": "./ignores.ts"
+		}
+	},
+	"files": [
+		"dist",
+		"configs",
+		"examples",
+		"base.ts",
+		"file-specific.ts",
+		"ignores.ts",
+		"README.md",
+		"LICENSE",
+		"CHANGELOG.md",
+		"QUICK_START.md",
+		"TROUBLESHOOTING.md",
+		"INSTALLATION_TEST.md",
+		"VERIFY_RULES.md"
+	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"prepublishOnly": "npm run clean && npm run build",
+		"postinstall": "node ./dist/scripts/postinstall.js || true",
+		"lint": "eslint src",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"prepare": "husky",
+		"release": "standard-version",
+		"release:patch": "standard-version --release-as patch",
+		"release:minor": "standard-version --release-as minor",
+		"release:major": "standard-version --release-as major",
+		"release:first": "standard-version --first-release"
+	},
+	"keywords": [
+		"eslint",
+		"eslint-plugin",
+		"eslint-config",
+		"react",
+		"typescript",
+		"custom-rules",
+		"react-hooks",
+		"best-practices",
+		"code-quality"
+	],
+	"author": "Zayat",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AliEl-Zayat/eslint-rules-zayat.git"
+	},
+	"bugs": {
+		"url": "https://github.com/AliEl-Zayat/eslint-rules-zayat/issues"
+	},
+	"homepage": "https://github.com/AliEl-Zayat/eslint-rules-zayat#readme",
+	"peerDependencies": {
+		"eslint": ">=9.0.0",
+		"typescript": ">=5.0.0"
+	},
+	"dependencies": {
+		"@eslint/js": "^9.0.0",
+		"@typescript-eslint/utils": "^8.0.0",
+		"eslint-config-prettier": "^10.0.0",
+		"eslint-plugin-import": "^2.29.0",
+		"eslint-plugin-prettier": "^5.0.0",
+		"eslint-plugin-simple-import-sort": "^12.0.0",
+		"eslint-plugin-unused-imports": "^4.0.0",
+		"globals": "^16.0.0",
+		"typescript-eslint": "^8.0.0"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.1.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"@types/node": "^22.0.0",
+		"@typescript-eslint/rule-tester": "^8.48.0",
+		"husky": "^9.1.7",
+		"standard-version": "^9.5.0",
+		"typescript": "^5.6.0",
+		"vitest": "^4.0.13"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
 }

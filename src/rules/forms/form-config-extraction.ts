@@ -211,3 +211,4 @@ export const formConfigExtraction = createRule({
 export default {
   "form-config-extraction": formConfigExtraction,
 };
+
